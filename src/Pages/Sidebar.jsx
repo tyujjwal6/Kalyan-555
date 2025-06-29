@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, UserCheck, Settings, Target } from 'lucide-react';
+// Updated icon imports for consistency
+import { Home, UserCheck } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -32,16 +33,35 @@ const SidebarLink = ({ to, icon: Icon, children }) => (
 
 // The Sidebar now accepts an `isOpen` prop
 const Sidebar = ({ isOpen }) => {
+  // Original links, with cleaner labels
   const gameManagementLinks = [
     { to: "/game-name", label: "Game Name" },
     { to: "/game-rates", label: "Game Rates" },
     { to: "/bid-history", label: "Bid History" },
     { to: "/declare-result-gm", label: "Declare Result" },
     { to: "/result-history", label: "Result History" },
-    { to: "/game-sell-report", label: "Game Sell report" },
-    { to: "/game-winning-report", label: "Game Winning report" },
-    { to: "/game-winning-prediction", label: "Game Winning Prediction" },
+    { to: "/game-sell-report", label: "Sell Report" },
+    { to: "/game-winning-report", label: "Winning Report" },
+    { to: "/game-winning-prediction", label: "Winning Prediction" },
   ];
+
+  // New links based on the image for 'Gali Disswar'
+  const galiDisswarLinks = [
+    { to: "/game-name-2", label: "Game Name" },
+    { to: "/game-rates-2", label: "Game Rates" },
+    { to: "/bid-history2", label: "Bid History" },
+    { to: "/declare-result-2", label: "Declare Result" }, // Corrected typo from image
+    { to: "/result-history-2", label: "Result History" },
+    { to: "/sell-report", label: "Sell Report" },
+    { to: "/winning-report", label: "Winning Report" },
+    { to: "/winning-prediction", label: "Winning Prediction" },
+  ];
+  
+  // New links for 'Report Management' (content is inferred as it's not in the image)
+  const reportManagementLinks = [
+     { to: "/user-bid-history", label: "Users Bid History" },
+  ];
+
 
   return (
     // Use the `isOpen` prop to conditionally apply classes for showing/hiding
@@ -69,11 +89,12 @@ const Sidebar = ({ isOpen }) => {
           <SidebarLink to="/" icon={Home}>Dashboards</SidebarLink>
           <SidebarLink to="/declare-result" icon={UserCheck}>Declare Result</SidebarLink>
 
-          <Accordion type="single" collapsible defaultValue="game-management" className="w-full">
+          <Accordion type="single" collapsible defaultValue="gali-disswar" className="w-full">
+            {/* Kept original 'Game Management' but updated icon */}
             <AccordionItem value="game-management" className="border-none">
               <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180">
                 <div className="flex items-center">
-                  <Settings className="mr-3 h-5 w-5" />
+                  <UserCheck className="mr-3 h-5 w-5" />
                   <span className="font-semibold text-base">Game Management</span>
                 </div>
               </AccordionTrigger>
@@ -83,11 +104,38 @@ const Sidebar = ({ isOpen }) => {
                 ))}
               </AccordionContent>
             </AccordionItem>
+            
+            {/* Added new 'Gali Disswar' accordion from the image */}
+            <AccordionItem value="gali-disswar" className="border-none">
+              <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180">
+                <div className="flex items-center">
+                  <UserCheck className="mr-3 h-5 w-5" />
+                  <span className="font-semibold text-base">Gali Disswar</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pl-6 space-y-1 pb-1">
+                {galiDisswarLinks.map((link) => (
+                  <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                ))}
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Added new 'Report Management' accordion from the image */}
+            <AccordionItem value="report-management" className="border-none">
+              <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180">
+                <div className="flex items-center">
+                  <UserCheck className="mr-3 h-5 w-5" />
+                  <span className="font-semibold text-base">Report Management</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pl-6 space-y-1 pb-1">
+                {reportManagementLinks.map((link) => (
+                  <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                ))}
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
           
-          <SidebarLink to="/winning-prediction" icon={Target}>
-              Winning Prediction
-          </SidebarLink>
         </nav>
       </div>
     </aside>
