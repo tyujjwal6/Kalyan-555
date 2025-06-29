@@ -10,13 +10,12 @@ import ResultHistory from './Pages/Gamemanagement/ResultHistory'
 import GameSellReport from './Pages/Gamemanagement/GameSellReport'
 import GameWinningReport from './Pages/Gamemanagement/GameWinningReport'
 import Layout from './Pages/Layout'
-import Header from './Pages/Heasder'
+import Header from './Pages/Header'
 
 const App = () => {
   return (
     
     <BrowserRouter>
-          <Header/>
 
       <Routes>
         {/* All routes inside Layout will have the sidebar */}

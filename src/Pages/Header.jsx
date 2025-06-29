@@ -35,11 +35,7 @@ const Header = ({ onMenuClick }) => {
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 sm:px-6">
       {/* Left side of the header */}
       <div className="flex items-center gap-4">
-      <img
-          src="/admin-logo.png"
-          alt="Admin Logo"
-          className="h-30 w-auto"
-        />
+     
         <Button variant="ghost" size="icon" onClick={onMenuClick}>
           <Menu className="h-6 w-6 text-gray-600" />
         </Button>
