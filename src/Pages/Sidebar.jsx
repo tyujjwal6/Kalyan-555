@@ -57,9 +57,15 @@ const Sidebar = ({ isOpen }) => {
     { to: "/winning-prediction", label: "Winning Prediction" },
   ];
   
-  // New links for 'Report Management' (content is inferred as it's not in the image)
+  // *** UPDATED: New links for 'Report Management' based on the image ***
   const reportManagementLinks = [
      { to: "/user-bid-history", label: "Users Bid History" },
+     { to: "/customer-sell-report", label: "Customer Sell Report" },
+     { to: "/winning-report", label: "Winning Report" }, // Added -rm to path to avoid conflicts
+     { to: "/transfer-point-report", label: "Transfer Point Report" },
+     { to: "/bid-win-report", label: "Bid Win Report" },
+     { to: "/withdraw-report", label: "Withdraw Report" },
+     { to: "/auto-deposit-history", label: "Auto Deposit History" },
   ];
 
 

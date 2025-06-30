@@ -21,7 +21,12 @@ import SellReport from './Pages/GaliDisswar/SellReport'
 import WinningReport from './Pages/GaliDisswar/WinningReport'
 import WinningPrediction from './Pages/GaliDisswar/WinningPrediction'
 import UserBidHistory from './Pages/Reportmanagement/UserBidHistory'
-
+import CustomerSellReport from './Pages/Reportmanagement/CustomerSellReport'
+import WinningReport1 from './Pages/Reportmanagement/WinningReport1'
+import TransferPointReport from './Pages/Reportmanagement/TranferPointReport'
+import BidWinReport from './Pages/Reportmanagement/BidWinReport'
+import WithdrawReport from './Pages/Reportmanagement/WithdrawReport'
+import AutoDepositHistory from './Pages/Reportmanagement/AutoDepositHistory'
 
 const App = () => {
   return (
@@ -57,6 +62,13 @@ const App = () => {
           <Route path="winning-report" element={<WinningReport />} />
           <Route path="winning-prediction" element={<WinningPrediction />} />
           <Route path="user-bid-history" element={<UserBidHistory />} />
+          <Route path="customer-sell-report" element={<CustomerSellReport />} />
+          <Route path="winning-report" element={<WinningReport1 />} />
+          <Route path="transfer-point-report" element={<TransferPointReport />} />
+          <Route path="bid-win-report" element={<BidWinReport />} />
+          <Route path="withdraw-report" element={<WithdrawReport />} />
+          <Route path="auto-deposit-history" element={<AutoDepositHistory />} />
+  
 
 
 
