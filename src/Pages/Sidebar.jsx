@@ -43,15 +43,47 @@ const SidebarAccordionTrigger = ({ icon: Icon, children }) => (
 // The Sidebar component
 const Sidebar = ({ isOpen }) => {
   // Existing link data definitions are kept as requested
-  const gameManagementLinks = [/* ...links... */];
-  const galiDisswarLinks = [/* ...links... */];
-  const reportManagementLinks = [/* ...links... */];
-  const walletManagementLinks = [/* ...links... */];
+  const gameManagementLinks = [ { to: "/game-name", label: "Game Name" },
+    { to: "/game-rates", label: "Game Rates" },
+    { to: "/bid-history", label: "Bid History" },
+    { to: "/declare-result-gm", label: "Declare Result" },
+    { to: "/result-history", label: "Result History" },
+    { to: "/game-sell-report", label: "Sell Report" },
+    { to: "/game-winning-report", label: "Winning Report" },
+    { to: "/game-winning-prediction", label: "Winning Prediction" },];
+
+
+  const galiDisswarLinks = [{ to: "/gali-game-name", label: "Game Name" },
+    { to: "/gali-game-rates", label: "Game Rates" },
+    { to: "/gali-bid-history", label: "Bid History" },
+    { to: "/gali-declare-result", label: "Declare Result" },
+    { to: "/gali-result-history", label: "Result History" },
+    { to: "/gali-sell-report", label: "Sell Report" },
+    { to: "/gali-winning-report", label: "Winning Report" },
+    { to: "/gali-winning-prediction", label: "Winning Prediction" },];
+
+
+
+  const reportManagementLinks = [  { to: "/user-bid-history", label: "Users Bid History" },
+     { to: "/customer-sell-report", label: "Customer Sell Report" },
+     { to: "/winning-report-rm", label: "Winning Report" },
+     { to: "/transfer-point-report", label: "Transfer Point Report" },
+     { to: "/bid-win-report", label: "Bid Win Report" },
+     { to: "/withdraw-report", label: "Withdraw Report" },
+     { to: "/auto-deposit-history", label: "Auto Deposit History" },];
+
+
+  const walletManagementLinks = [ { to: "/fund-request", label: "Fund Request" },
+    { to: "/withdraw-request", label: "Withdraw Request" },
+    { to: "/amount-added-by-admin", label: "Amount Added By Admin" },
+    { to: "/add-fund-user-wallet", label: "Add Fund (User Wallet)" },
+    { to: "/bid-revert", label: "Bid Revert" },
+    { to: "/autopay-transaction", label: "Autopay Transaction" },];
 
   // Corrected paths for better routing
   const gamesManagementLinks = [
-    { to: "/games-management/game-name", label: "Game Name" },
-    { to: "/games-management/game-rates", label: "Game Rates" },
+    { to: "game-name-3", label: "Game Name" },
+    { to: "game-rates-3", label: "Game Rates" },
   ];
 
   return (
