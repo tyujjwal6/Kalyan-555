@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 // Using consistent icons from lucide-react
-import { Home, UserCheck, Gamepad2 } from 'lucide-react';
+import { Home, UserCheck, Gamepad2 } from 'lucide-react'; // Added Gamepad2
 import {
   Accordion,
   AccordionContent,
@@ -21,7 +21,7 @@ const SidebarLink = ({ to, icon: Icon, children, isSubLink = false }) => (
         isActive
           ? "text-white font-bold bg-gray-700/50"
           : "text-gray-400 font-medium",
-        isSubLink && "py-2 pl-6"
+        isSubLink && "py-2 pl-6" // Specific styling for sub-links
       )
     }
   >
@@ -43,58 +43,68 @@ const SidebarAccordionTrigger = ({ icon: Icon, children }) => (
 // The Sidebar component
 const Sidebar = ({ isOpen }) => {
   // Existing link data definitions are kept as requested
-  const gameManagementLinks = [ { to: "/game-name", label: "Game Name" },
+  const gameManagementLinks = [
+    { to: "/game-name", label: "Game Name" },
     { to: "/game-rates", label: "Game Rates" },
     { to: "/bid-history", label: "Bid History" },
     { to: "/declare-result-gm", label: "Declare Result" },
     { to: "/result-history", label: "Result History" },
     { to: "/game-sell-report", label: "Sell Report" },
     { to: "/game-winning-report", label: "Winning Report" },
-    { to: "/game-winning-prediction", label: "Winning Prediction" },];
+    { to: "/game-winning-prediction", label: "Winning Prediction" },
+  ];
 
-
-  const galiDisswarLinks = [{ to: "/gali-game-name", label: "Game Name" },
+  const galiDisswarLinks = [
+    { to: "/gali-game-name", label: "Game Name" },
     { to: "/gali-game-rates", label: "Game Rates" },
     { to: "/gali-bid-history", label: "Bid History" },
     { to: "/gali-declare-result", label: "Declare Result" },
     { to: "/gali-result-history", label: "Result History" },
     { to: "/gali-sell-report", label: "Sell Report" },
     { to: "/gali-winning-report", label: "Winning Report" },
-    { to: "/gali-winning-prediction", label: "Winning Prediction" },];
-
-
-
-  const reportManagementLinks = [  { to: "/user-bid-history", label: "Users Bid History" },
+    { to: "/gali-winning-prediction", label: "Winning Prediction" },
+  ];
+  
+  const reportManagementLinks = [
+     { to: "/user-bid-history", label: "Users Bid History" },
      { to: "/customer-sell-report", label: "Customer Sell Report" },
-     { to: "/winning-report-rm", label: "Winning Report" },
+     { to: "/winning-report", label: "Winning Report" },
      { to: "/transfer-point-report", label: "Transfer Point Report" },
      { to: "/bid-win-report", label: "Bid Win Report" },
      { to: "/withdraw-report", label: "Withdraw Report" },
-     { to: "/auto-deposit-history", label: "Auto Deposit History" },];
+     { to: "/auto-deposit-history", label: "Auto Deposit History" },
+  ];
 
-
-  const walletManagementLinks = [ { to: "/fund-request", label: "Fund Request" },
+  const walletManagementLinks = [
+    { to: "/fund-request", label: "Fund Request" },
     { to: "/withdraw-request", label: "Withdraw Request" },
     { to: "/amount-added-by-admin", label: "Amount Added By Admin" },
     { to: "/add-fund-user-wallet", label: "Add Fund (User Wallet)" },
     { to: "/bid-revert", label: "Bid Revert" },
-    { to: "/autopay-transaction", label: "Autopay Transaction" },];
+    { to: "/autopay-transaction", label: "Autopay Transaction" },
+  ];
 
-  // Corrected paths for better routing
   const gamesManagementLinks = [
     { to: "game-name-3", label: "Game Name" },
     { to: "game-rates-3", label: "Game Rates" },
   ];
 
+  // *** NEW: Data for the "Game & Numbers" section as per the image ***
+  const gameAndNumbersLinks = [
+    { to: "/single-digit", label: "Single Digit" },
+    { to: "/jodi-digit", label: "Jodi Digit" },
+    { to: "/single-pana", label: "Single Pana" },
+    { to: "/double-pana", label: "Double Pana" },
+    { to: "/tripple-pana", label: "Tripple Pana" },
+    { to: "/half-sangam", label: "Half Sangam" },
+    { to: "/full-sangam", label: "Full Sangam" },
+  ];
+
   return (
     <aside
       className={cn(
-        // Base styles for the sidebar
         "fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-black text-white transition-transform duration-300 ease-in-out",
-        // Mobile view: slide in/out based on the isOpen prop
-        isOpen ? "translate-x-0" : "-translate-x-full",
-        // Desktop view: always visible
-        "lg:translate-x-0"
+        isOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
       {/* Logo Section */}
@@ -112,7 +122,9 @@ const Sidebar = ({ isOpen }) => {
             <AccordionItem value="game-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Game Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
-                    {/* Your links here */}
+                    {gameManagementLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -120,8 +132,10 @@ const Sidebar = ({ isOpen }) => {
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="gali-disswar" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Gali Disswar</SidebarAccordionTrigger>
-                 <AccordionContent className="pl-6 space-y-1 pb-1">
-                    {/* Your links here */}
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {galiDisswarLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -130,7 +144,9 @@ const Sidebar = ({ isOpen }) => {
             <AccordionItem value="report-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Report Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
-                    {/* Your links here */}
+                    {reportManagementLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -141,15 +157,16 @@ const Sidebar = ({ isOpen }) => {
             <AccordionItem value="wallet-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Wallet Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
-                    {/* Your links here */}
+                    {walletManagementLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
           
           <SidebarLink to="/user-management" icon={UserCheck}>User Management</SidebarLink>
 
-          {/* Games Management Accordion (open by default) */}
-          <Accordion type="single" collapsible defaultValue="games-management" className="w-full">
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="games-management" className="border-none">
                 <SidebarAccordionTrigger icon={Gamepad2}>Games Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
@@ -159,6 +176,19 @@ const Sidebar = ({ isOpen }) => {
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
+
+          {/* *** NEW: Game & Numbers Accordion (open by default as per image) *** */}
+          <Accordion type="single" collapsible defaultValue="game-and-numbers" className="w-full">
+            <AccordionItem value="game-and-numbers" className="border-none">
+                <SidebarAccordionTrigger icon={UserCheck}>Game & Numbers</SidebarAccordionTrigger>
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {gameAndNumbersLinks.map((link) => (
+                      <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
+                </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
         </nav>
       </div>
     </aside>

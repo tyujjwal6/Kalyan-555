@@ -37,6 +37,13 @@ import AutopayTransaction from './Pages/WalletManagement/AutoPayTransaction'
 import UserManagement from './Pages/UserManagement'
 import GameName3 from './Pages/GamesManagement/GameName3'
 import GameRates3 from './Pages/GamesManagement/GameRates3'
+import SingleDigit from './Pages/GamrAndNumbers/SingleDigit'
+import JodiDigit from './Pages/GamrAndNumbers/JodiDigit'
+import SinglePana from './Pages/GamrAndNumbers/SinglePana'
+import DoublePana from './Pages/GamrAndNumbers/DoublePana'
+import TripplePana from './Pages/GamrAndNumbers/TripplePana'
+import HalfSangam from './Pages/GamrAndNumbers/HalfSangam'
+import FullSangam from './Pages/GamrAndNumbers/FullSangam'
 
 const App = () => {
   return (
@@ -88,6 +95,14 @@ const App = () => {
           <Route path="user-management" element={<UserManagement />} />
           <Route path="game-name-3" element={<GameName3 />} />
           <Route path="game-rates-3" element={<GameRates3 />} />
+          <Route path="single-digit" element={<SingleDigit />} />
+          <Route path="jodi-digit" element={<JodiDigit />} />
+          <Route path="single-pana" element={<SinglePana />} />
+          <Route path="double-pana" element={<DoublePana />} />
+          <Route path="trpple-pana" element={<TripplePana />} />
+          <Route path="half-sangam" element={<HalfSangam />} />
+          <Route path="full-sangam" element={<FullSangam />} />
+
 
 
 
