@@ -75,7 +75,6 @@ const Sidebar = ({ isOpen }) => {
      { to: "/auto-deposit-history", label: "Auto Deposit History" },
   ];
 
-  // *** UPDATED: New links for 'Wallet Management' based on the image ***
   const walletManagementLinks = [
     { to: "/fund-request", label: "Fund Request" },
     { to: "/withdraw-request", label: "Withdraw Request" },
@@ -94,8 +93,8 @@ const Sidebar = ({ isOpen }) => {
     >
       {/* Logo Section */}
       <div className="flex h-16 items-center justify-center border-b border-gray-800 px-4">
-        {/* Placeholder for a logo or title */}
-        <span className="text-xl font-bold tracking-wider text-white">Admin Panel</span>
+        {/* --- UPDATED TITLE --- */}
+        <span className="text-xl font-bold tracking-wider text-white">KALYAN 555</span>
       </div>
       
       {/* Navigation Links Area */}
@@ -135,10 +134,8 @@ const Sidebar = ({ isOpen }) => {
             </AccordionItem>
           </Accordion>
           
-          {/* *** UPDATED: Winning Prediction as a single link *** */}
           <SidebarLink to="/winning-prediction" icon={UserCheck}>Winning Prediction</SidebarLink>
 
-          {/* *** UPDATED: Wallet Management as an accordion *** */}
           <Accordion type="single" collapsible defaultValue="wallet-management" className="w-full">
             <AccordionItem value="wallet-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Wallet Management</SidebarAccordionTrigger>
