@@ -34,6 +34,9 @@ import AmountAddedByAdmin from './Pages/WalletManagement/AmountAddedByAdmin'
 import AddFund from './Pages/WalletManagement/AddFundUserWalltet'
 import BidRevert from './Pages/WalletManagement/BidRevert'
 import AutopayTransaction from './Pages/WalletManagement/AutoPayTransaction'
+import UserManagement from './Pages/UserManagement'
+import GameName3 from './Pages/GamesManagement/GameName3'
+import GameRates3 from './Pages/GamesManagement/GameRates3'
 
 const App = () => {
   return (
@@ -82,6 +85,9 @@ const App = () => {
           <Route path="add-fund-user-wallet" element={<AddFund />} />
           <Route path="bid-revert" element={<BidRevert />} />
           <Route path="autopay-transaction" element={<AutopayTransaction />} />
+          <Route path="user-management" element={<UserManagement />} />
+          <Route path="game-name-3" element={<GameName3 />} />
+          <Route path="game-rates-3" element={<GameRates3 />} />
 
 
 

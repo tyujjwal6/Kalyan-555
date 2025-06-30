@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 // Using consistent icons from lucide-react
-import { Home, UserCheck } from 'lucide-react';
+import { Home, UserCheck, Gamepad2 } from 'lucide-react'; // Added Gamepad2
 import {
   Accordion,
   AccordionContent,
@@ -40,9 +40,9 @@ const SidebarAccordionTrigger = ({ icon: Icon, children }) => (
     </AccordionTrigger>
 );
 
-// The Sidebar now accepts an `isOpen` prop
+// The Sidebar component
 const Sidebar = ({ isOpen }) => {
-  // Link data organized by section
+  // Existing link data definitions are kept as requested
   const gameManagementLinks = [
     { to: "/game-name", label: "Game Name" },
     { to: "/game-rates", label: "Game Rates" },
@@ -79,9 +79,15 @@ const Sidebar = ({ isOpen }) => {
     { to: "/fund-request", label: "Fund Request" },
     { to: "/withdraw-request", label: "Withdraw Request" },
     { to: "/amount-added-by-admin", label: "Amount Added By Admin" },
-    { to: "/add-fund", label: "Add Fund (User Wallet)" },
+    { to: "/add-fund-user-wallet", label: "Add Fund (User Wallet)" },
     { to: "/bid-revert", label: "Bid Revert" },
     { to: "/autopay-transaction", label: "Autopay Transaction" },
+  ];
+
+  // *** NEW: Links for the new "Games Management" section ***
+  const gamesManagementLinks = [
+    { to: "game-name-3", label: "Game Name" },
+    { to: "game-rates-3", label: "Game Rates" },
   ];
 
   return (
@@ -93,7 +99,6 @@ const Sidebar = ({ isOpen }) => {
     >
       {/* Logo Section */}
       <div className="flex h-16 items-center justify-center border-b border-gray-800 px-4">
-        {/* --- UPDATED TITLE --- */}
         <span className="text-xl font-bold tracking-wider text-white">KALYAN 555</span>
       </div>
       
@@ -103,9 +108,7 @@ const Sidebar = ({ isOpen }) => {
           <SidebarLink to="/" icon={Home}>Dashboards</SidebarLink>
           <SidebarLink to="/declare-result" icon={UserCheck}>Declare Result</SidebarLink>
 
-          {/* Accordion parent with default open state set to Wallet Management */}
-          <Accordion type="single" collapsible defaultValue="wallet-management" className="w-full">
-            
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="game-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Game Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
@@ -114,7 +117,9 @@ const Sidebar = ({ isOpen }) => {
                     ))}
                 </AccordionContent>
             </AccordionItem>
-            
+          </Accordion>
+
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="gali-disswar" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Gali Disswar</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
@@ -123,7 +128,9 @@ const Sidebar = ({ isOpen }) => {
                     ))}
                 </AccordionContent>
             </AccordionItem>
-
+          </Accordion>
+          
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="report-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Report Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
@@ -133,10 +140,10 @@ const Sidebar = ({ isOpen }) => {
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
-          
+
           <SidebarLink to="/winning-prediction" icon={UserCheck}>Winning Prediction</SidebarLink>
 
-          <Accordion type="single" collapsible defaultValue="wallet-management" className="w-full">
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="wallet-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Wallet Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
@@ -147,6 +154,19 @@ const Sidebar = ({ isOpen }) => {
             </AccordionItem>
           </Accordion>
           
+          <SidebarLink to="/user-management" icon={UserCheck}>User Management</SidebarLink>
+
+          {/* *** NEW: Games Management Accordion (open by default) *** */}
+          <Accordion type="single" collapsible defaultValue="games-management" className="w-full">
+            <AccordionItem value="games-management" className="border-none">
+                <SidebarAccordionTrigger icon={Gamepad2}>Games Management</SidebarAccordionTrigger>
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {gamesManagementLinks.map((link) => (
+                      <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
+                </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </nav>
       </div>
     </aside>
