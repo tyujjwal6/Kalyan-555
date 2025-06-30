@@ -44,6 +44,8 @@ import DoublePana from './Pages/GamrAndNumbers/DoublePana'
 import TripplePana from './Pages/GamrAndNumbers/TripplePana'
 import HalfSangam from './Pages/GamrAndNumbers/HalfSangam'
 import FullSangam from './Pages/GamrAndNumbers/FullSangam'
+import NoticeManagement from './Pages/Noticemanagement/NoticeManagement'
+import SendNotification from './Pages/Noticemanagement/SendNotification'
 
 const App = () => {
   return (
@@ -102,6 +104,9 @@ const App = () => {
           <Route path="trpple-pana" element={<TripplePana />} />
           <Route path="half-sangam" element={<HalfSangam />} />
           <Route path="full-sangam" element={<FullSangam />} />
+          <Route path="notice-management" element={<NoticeManagement />} />
+          <Route path="send-notification" element={<SendNotification />} />
+
 
 
 

@@ -89,7 +89,6 @@ const Sidebar = ({ isOpen }) => {
     { to: "game-rates-3", label: "Game Rates" },
   ];
 
-  // *** NEW: Data for the "Game & Numbers" section as per the image ***
   const gameAndNumbersLinks = [
     { to: "/single-digit", label: "Single Digit" },
     { to: "/jodi-digit", label: "Jodi Digit" },
@@ -98,6 +97,12 @@ const Sidebar = ({ isOpen }) => {
     { to: "/tripple-pana", label: "Tripple Pana" },
     { to: "/half-sangam", label: "Half Sangam" },
     { to: "/full-sangam", label: "Full Sangam" },
+  ];
+
+  // *** NEW: Data for the "Notice Management" section as per the image ***
+  const noticeManagementLinks = [
+    { to: "/notice-management", label: "Notice Management" },
+    { to: "/send-notification", label: "Send Notification" },
   ];
 
   return (
@@ -177,12 +182,23 @@ const Sidebar = ({ isOpen }) => {
             </AccordionItem>
           </Accordion>
 
-          {/* *** NEW: Game & Numbers Accordion (open by default as per image) *** */}
-          <Accordion type="single" collapsible defaultValue="game-and-numbers" className="w-full">
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="game-and-numbers" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Game & Numbers</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
                     {gameAndNumbersLinks.map((link) => (
+                      <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
+                </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          
+          {/* *** NEW: Notice Management Accordion (open by default as per image) *** */}
+          <Accordion type="single" collapsible defaultValue="notice-management" className="w-full">
+            <AccordionItem value="notice-management" className="border-none">
+                <SidebarAccordionTrigger icon={UserCheck}>Notice Management</SidebarAccordionTrigger>
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {noticeManagementLinks.map((link) => (
                       <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
                     ))}
                 </AccordionContent>
