@@ -1,8 +1,6 @@
-// src/components/Sidebar.jsx (Updated)
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-// Updated icon imports for consistency
+// Using consistent icons from lucide-react
 import { Home, UserCheck } from 'lucide-react';
 import {
   Accordion,
@@ -13,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 
 // A reusable link component using NavLink for active styling
-const SidebarLink = ({ to, icon: Icon, children }) => (
+const SidebarLink = ({ to, icon: Icon, children, isSubLink = false }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
@@ -22,7 +20,8 @@ const SidebarLink = ({ to, icon: Icon, children }) => (
         "hover:bg-gray-800",
         isActive
           ? "text-white font-bold bg-gray-700/50"
-          : "text-gray-400 font-medium"
+          : "text-gray-400 font-medium",
+        isSubLink && "py-2 pl-6" // Specific styling for sub-links
       )
     }
   >
@@ -31,9 +30,19 @@ const SidebarLink = ({ to, icon: Icon, children }) => (
   </NavLink>
 );
 
+// A reusable Accordion Trigger component for clean code
+const SidebarAccordionTrigger = ({ icon: Icon, children }) => (
+    <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-white [&[data-state=open]]:font-bold">
+        <div className="flex items-center">
+        <Icon className="mr-3 h-5 w-5" />
+        <span className="font-semibold text-base">{children}</span>
+        </div>
+    </AccordionTrigger>
+);
+
 // The Sidebar now accepts an `isOpen` prop
 const Sidebar = ({ isOpen }) => {
-  // Original links, with cleaner labels
+  // Link data organized by section
   const gameManagementLinks = [
     { to: "/game-name", label: "Game Name" },
     { to: "/game-rates", label: "Game Rates" },
@@ -45,32 +54,38 @@ const Sidebar = ({ isOpen }) => {
     { to: "/game-winning-prediction", label: "Winning Prediction" },
   ];
 
-  // New links based on the image for 'Gali Disswar'
   const galiDisswarLinks = [
-    { to: "/game-name-2", label: "Game Name" },
-    { to: "/game-rates-2", label: "Game Rates" },
-    { to: "/bid-history2", label: "Bid History" },
-    { to: "/declare-result-2", label: "Declare Result" }, // Corrected typo from image
-    { to: "/result-history-2", label: "Result History" },
-    { to: "/sell-report", label: "Sell Report" },
-    { to: "/winning-report", label: "Winning Report" },
-    { to: "/winning-prediction", label: "Winning Prediction" },
+    { to: "/gali-game-name", label: "Game Name" },
+    { to: "/gali-game-rates", label: "Game Rates" },
+    { to: "/gali-bid-history", label: "Bid History" },
+    { to: "/gali-declare-result", label: "Declare Result" },
+    { to: "/gali-result-history", label: "Result History" },
+    { to: "/gali-sell-report", label: "Sell Report" },
+    { to: "/gali-winning-report", label: "Winning Report" },
+    { to: "/gali-winning-prediction", label: "Winning Prediction" },
   ];
   
-  // *** UPDATED: New links for 'Report Management' based on the image ***
   const reportManagementLinks = [
      { to: "/user-bid-history", label: "Users Bid History" },
      { to: "/customer-sell-report", label: "Customer Sell Report" },
-     { to: "/winning-report", label: "Winning Report" }, // Added -rm to path to avoid conflicts
+     { to: "/winning-report-rm", label: "Winning Report" },
      { to: "/transfer-point-report", label: "Transfer Point Report" },
      { to: "/bid-win-report", label: "Bid Win Report" },
      { to: "/withdraw-report", label: "Withdraw Report" },
      { to: "/auto-deposit-history", label: "Auto Deposit History" },
   ];
 
+  // *** UPDATED: New links for 'Wallet Management' based on the image ***
+  const walletManagementLinks = [
+    { to: "/fund-request", label: "Fund Request" },
+    { to: "/withdraw-request", label: "Withdraw Request" },
+    { to: "/amount-added-by-admin", label: "Amount Added By Admin" },
+    { to: "/add-fund", label: "Add Fund (User Wallet)" },
+    { to: "/bid-revert", label: "Bid Revert" },
+    { to: "/autopay-transaction", label: "Autopay Transaction" },
+  ];
 
   return (
-    // Use the `isOpen` prop to conditionally apply classes for showing/hiding
     <aside
       className={cn(
         "fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-black text-white transition-transform duration-300 ease-in-out",
@@ -79,14 +94,8 @@ const Sidebar = ({ isOpen }) => {
     >
       {/* Logo Section */}
       <div className="flex h-16 items-center justify-center border-b border-gray-800 px-4">
-        <a
-          href="https://example.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-2xl font-bold tracking-wider text-white no-underline transition-opacity hover:opacity-80"
-        >
-          KALYAN 555
-        </a>
+        {/* Placeholder for a logo or title */}
+        <span className="text-xl font-bold tracking-wider text-white">Admin Panel</span>
       </div>
       
       {/* Navigation Links Area */}
@@ -95,50 +104,49 @@ const Sidebar = ({ isOpen }) => {
           <SidebarLink to="/" icon={Home}>Dashboards</SidebarLink>
           <SidebarLink to="/declare-result" icon={UserCheck}>Declare Result</SidebarLink>
 
-          <Accordion type="single" collapsible defaultValue="gali-disswar" className="w-full">
-            {/* Kept original 'Game Management' but updated icon */}
+          {/* Accordion parent with default open state set to Wallet Management */}
+          <Accordion type="single" collapsible defaultValue="wallet-management" className="w-full">
+            
             <AccordionItem value="game-management" className="border-none">
-              <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180">
-                <div className="flex items-center">
-                  <UserCheck className="mr-3 h-5 w-5" />
-                  <span className="font-semibold text-base">Game Management</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pl-6 space-y-1 pb-1">
-                {gameManagementLinks.map((link) => (
-                  <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
-                ))}
-              </AccordionContent>
+                <SidebarAccordionTrigger icon={UserCheck}>Game Management</SidebarAccordionTrigger>
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {gameManagementLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
+                </AccordionContent>
             </AccordionItem>
             
-            {/* Added new 'Gali Disswar' accordion from the image */}
             <AccordionItem value="gali-disswar" className="border-none">
-              <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180">
-                <div className="flex items-center">
-                  <UserCheck className="mr-3 h-5 w-5" />
-                  <span className="font-semibold text-base">Gali Disswar</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pl-6 space-y-1 pb-1">
-                {galiDisswarLinks.map((link) => (
-                  <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
-                ))}
-              </AccordionContent>
+                <SidebarAccordionTrigger icon={UserCheck}>Gali Disswar</SidebarAccordionTrigger>
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {galiDisswarLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
+                </AccordionContent>
             </AccordionItem>
 
-            {/* Added new 'Report Management' accordion from the image */}
             <AccordionItem value="report-management" className="border-none">
-              <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180">
-                <div className="flex items-center">
-                  <UserCheck className="mr-3 h-5 w-5" />
-                  <span className="font-semibold text-base">Report Management</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pl-6 space-y-1 pb-1">
-                {reportManagementLinks.map((link) => (
-                  <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
-                ))}
-              </AccordionContent>
+                <SidebarAccordionTrigger icon={UserCheck}>Report Management</SidebarAccordionTrigger>
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {reportManagementLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
+                </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          
+          {/* *** UPDATED: Winning Prediction as a single link *** */}
+          <SidebarLink to="/winning-prediction" icon={UserCheck}>Winning Prediction</SidebarLink>
+
+          {/* *** UPDATED: Wallet Management as an accordion *** */}
+          <Accordion type="single" collapsible defaultValue="wallet-management" className="w-full">
+            <AccordionItem value="wallet-management" className="border-none">
+                <SidebarAccordionTrigger icon={UserCheck}>Wallet Management</SidebarAccordionTrigger>
+                <AccordionContent className="pl-6 space-y-1 pb-1">
+                    {walletManagementLinks.map((link) => (
+                    <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                    ))}
+                </AccordionContent>
             </AccordionItem>
           </Accordion>
           

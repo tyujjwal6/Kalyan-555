@@ -27,6 +27,13 @@ import TransferPointReport from './Pages/Reportmanagement/TranferPointReport'
 import BidWinReport from './Pages/Reportmanagement/BidWinReport'
 import WithdrawReport from './Pages/Reportmanagement/WithdrawReport'
 import AutoDepositHistory from './Pages/Reportmanagement/AutoDepositHistory'
+import WinningPrediction3 from './Pages/WinningPrediction3'
+import FundRequest from './Pages/WalletManagement/FundRequest'
+import WithdrawRequest from './Pages/WalletManagement/WithdrawRequest'
+import AmountAddedByAdmin from './Pages/WalletManagement/AmountAddedByAdmin'
+import AddFund from './Pages/WalletManagement/AddFundUserWalltet'
+import BidRevert from './Pages/WalletManagement/BidRevert'
+import AutopayTransaction from './Pages/WalletManagement/AutoPayTransaction'
 
 const App = () => {
   return (
@@ -68,6 +75,17 @@ const App = () => {
           <Route path="bid-win-report" element={<BidWinReport />} />
           <Route path="withdraw-report" element={<WithdrawReport />} />
           <Route path="auto-deposit-history" element={<AutoDepositHistory />} />
+          <Route path="winning-prediction-3" element={<WinningPrediction3 />} />
+          <Route path="fund-request" element={<FundRequest />} />
+          <Route path="withdraw-request" element={<WithdrawRequest />} />
+          <Route path="amount-added-by-admin" element={<AmountAddedByAdmin />} />
+          <Route path="add-fund-user-wallet" element={<AddFund />} />
+          <Route path="bid-revert" element={<BidRevert />} />
+          <Route path="autopay-transaction" element={<AutopayTransaction />} />
+
+
+
+
   
 
 
