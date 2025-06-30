@@ -46,6 +46,13 @@ import HalfSangam from './Pages/GamrAndNumbers/HalfSangam'
 import FullSangam from './Pages/GamrAndNumbers/FullSangam'
 import NoticeManagement from './Pages/Noticemanagement/NoticeManagement'
 import SendNotification from './Pages/Noticemanagement/SendNotification'
+import UserQuery from './Pages/UserQuery'
+import MainSettings from './Pages/Setting/MainSettings'
+import ContactSettings from './Pages/Setting/ContactSettings'
+import ClearData from './Pages/Setting/ClearData'
+import SliderImage from './Pages/Setting/SliderImages'
+import QRCodeImages from './Pages/Setting/QRcodeImages'
+import HowToPlay from './Pages/Setting/HowToPlay'
 
 const App = () => {
   return (
@@ -106,14 +113,13 @@ const App = () => {
           <Route path="full-sangam" element={<FullSangam />} />
           <Route path="notice-management" element={<NoticeManagement />} />
           <Route path="send-notification" element={<SendNotification />} />
-
-
-
-
-
-
-  
-
+          <Route path="user-query" element={<UserQuery />} />
+          <Route path="main-settings" element={<MainSettings />} />
+          <Route path="contact-settings" element={<ContactSettings />} />
+          <Route path="clear-data" element={<ClearData />} />
+          <Route path="slider-images" element={<SliderImage />} />
+          <Route path="qr-code-images" element={<QRCodeImages />} />
+          <Route path="how-to-play" element={<HowToPlay />} />
 
 
 

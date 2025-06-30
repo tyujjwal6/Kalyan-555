@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 // Using consistent icons from lucide-react
-import { Home, UserCheck, Gamepad2 } from 'lucide-react'; // Added Gamepad2
+import { Home, UserCheck, Gamepad2, ClipboardList, Settings } from 'lucide-react'; // Added ClipboardList & Settings
 import {
   Accordion,
   AccordionContent,
@@ -43,27 +43,27 @@ const SidebarAccordionTrigger = ({ icon: Icon, children }) => (
 // The Sidebar component
 const Sidebar = ({ isOpen }) => {
   // Existing link data definitions are kept as requested
-  const gameManagementLinks = [
-    { to: "/game-name", label: "Game Name" },
-    { to: "/game-rates", label: "Game Rates" },
-    { to: "/bid-history", label: "Bid History" },
-    { to: "/declare-result-gm", label: "Declare Result" },
-    { to: "/result-history", label: "Result History" },
-    { to: "/game-sell-report", label: "Sell Report" },
-    { to: "/game-winning-report", label: "Winning Report" },
-    { to: "/game-winning-prediction", label: "Winning Prediction" },
-  ];
+const gameManagementLinks = [
+{ to: "/game-name", label: "Game Name" },
+{ to: "/game-rates", label: "Game Rates" },
+{ to: "/bid-history", label: "Bid History" },
+{ to: "/declare-result-gm", label: "Declare Result" },
+{ to: "/result-history", label: "Result History" },
+{ to: "/game-sell-report", label: "Sell Report" },
+{ to: "/game-winning-report", label: "Winning Report" },
+{ to: "/game-winning-prediction", label: "Winning Prediction" },
+];
 
-  const galiDisswarLinks = [
-    { to: "/gali-game-name", label: "Game Name" },
-    { to: "/gali-game-rates", label: "Game Rates" },
-    { to: "/gali-bid-history", label: "Bid History" },
-    { to: "/gali-declare-result", label: "Declare Result" },
-    { to: "/gali-result-history", label: "Result History" },
-    { to: "/gali-sell-report", label: "Sell Report" },
-    { to: "/gali-winning-report", label: "Winning Report" },
-    { to: "/gali-winning-prediction", label: "Winning Prediction" },
-  ];
+const galiDisswarLinks = [
+{ to: "/game-name-2", label: "Game Name" },
+{ to: "/game-rates-2", label: "Game Rates" },
+{ to: "/bid-history-2", label: "Bid History" },
+{ to: "/declare-result-2", label: "Declare Result" },
+{ to: "/result-history-2", label: "Result History" },
+{ to: "/sell-report", label: "Sell Report" },
+{ to: "/winning-report", label: "Winning Report" },
+{ to: "/winning-prediction", label: "Winning Prediction" },
+];
   
   const reportManagementLinks = [
      { to: "/user-bid-history", label: "Users Bid History" },
@@ -99,11 +99,21 @@ const Sidebar = ({ isOpen }) => {
     { to: "/full-sangam", label: "Full Sangam" },
   ];
 
-  // *** NEW: Data for the "Notice Management" section as per the image ***
   const noticeManagementLinks = [
     { to: "/notice-management", label: "Notice Management" },
     { to: "/send-notification", label: "Send Notification" },
   ];
+  
+  // *** NEW: Data for the Settings links ***
+  const settingsLinks = [
+    { to: "/main-settings", label: "Main Settings" },
+    { to: "/contact-settings", label: "Contact Settings" },
+    { to: "/clear-data", label: "Clear Data" },
+    { to: "/slider-images", label: "Slider Images" },
+    { to: "/qr-code-images", label: "QR code Images" },
+    { to: "/how-to-play", label: "How To Play" },
+  ];
+
 
   return (
     <aside
@@ -193,8 +203,7 @@ const Sidebar = ({ isOpen }) => {
             </AccordionItem>
           </Accordion>
           
-          {/* *** NEW: Notice Management Accordion (open by default as per image) *** */}
-          <Accordion type="single" collapsible defaultValue="notice-management" className="w-full">
+          <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="notice-management" className="border-none">
                 <SidebarAccordionTrigger icon={UserCheck}>Notice Management</SidebarAccordionTrigger>
                 <AccordionContent className="pl-6 space-y-1 pb-1">
@@ -204,6 +213,21 @@ const Sidebar = ({ isOpen }) => {
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
+
+          <SidebarLink to="/user-query" icon={ClipboardList}>Users Query</SidebarLink>
+          
+          {/* *** START: ADDED SETTINGS SECTION *** */}
+          <Accordion type="single" collapsible className="w-full" defaultValue="settings">
+            <AccordionItem value="settings" className="border-none">
+              <SidebarAccordionTrigger icon={Settings}>Settings</SidebarAccordionTrigger>
+              <AccordionContent className="pl-6 space-y-1 pb-1">
+                {settingsLinks.map((link) => (
+                  <SidebarLink key={link.to} to={link.to}>{link.label}</SidebarLink>
+                ))}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          {/* *** END: ADDED SETTINGS SECTION *** */}
 
         </nav>
       </div>
