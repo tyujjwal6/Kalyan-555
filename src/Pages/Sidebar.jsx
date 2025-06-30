@@ -16,7 +16,8 @@ const SidebarLink = ({ to, icon: Icon, children, isSubLink = false }) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "flex items-center w-full text-left p-3 rounded-md transition-colors",
+        // MODIFICATION: Added 'text-sm' to make all links smaller
+        "flex items-center w-full text-left p-3 rounded-md transition-colors text-sm",
         "hover:bg-gray-800",
         isActive
           ? "text-white font-bold bg-gray-700/50"
@@ -35,7 +36,8 @@ const SidebarAccordionTrigger = ({ icon: Icon, children }) => (
     <AccordionTrigger className="p-3 text-gray-400 hover:text-white hover:no-underline rounded-md hover:bg-gray-800 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-white [&[data-state=open]]:font-bold">
         <div className="flex items-center">
         <Icon className="mr-3 h-5 w-5" />
-        <span className="font-semibold text-base">{children}</span>
+        {/* MODIFICATION: Changed 'text-base' to 'text-sm' */}
+        <span className="font-semibold text-sm">{children}</span>
         </div>
     </AccordionTrigger>
 );
