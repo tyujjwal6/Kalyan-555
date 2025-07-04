@@ -64,7 +64,7 @@ const galiDisswarLinks = [
 { to: "/result-history-2", label: "Result History" },
 { to: "/sell-report", label: "Sell Report" },
 { to: "/winning-report", label: "Winning Report" },
-{ to: "/winning-prediction", label: "Winning Prediction" },
+{ to: "/winning-prediction-5", label: "Winning Prediction" },
 ];
   
   const reportManagementLinks = [
