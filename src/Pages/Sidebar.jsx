@@ -168,7 +168,7 @@ const galiDisswarLinks = [
             </AccordionItem>
           </Accordion>
 
-          <SidebarLink to="/winning-prediction" icon={UserCheck}>Winning Prediction</SidebarLink>
+          <SidebarLink to="/winning-prediction-3" icon={UserCheck}>Winning Prediction</SidebarLink>
 
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="wallet-management" className="border-none">
