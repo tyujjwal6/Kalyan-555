@@ -1,4 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { format } from "date-fns"; // For formatting dates
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { cn } from "@/lib/utils"; // A utility from shadcn for conditional class names
+
+// Import shadcn/ui components
 import {
   Card,
   CardContent,
@@ -29,40 +34,56 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar"; // The actual interactive calendar
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon } from 'lucide-react';
 
-// Reusable DateInput component
-const DateInput = ({ id, value, onChange, label }) => (
+// A functional DatePicker component using Popover and Calendar
+const DatePicker = ({ date, setDate, label, id }) => (
   <div>
     <Label htmlFor={id} className="text-sm font-medium">{label}</Label>
-    <div className="relative mt-1">
-      <Input
-        id={id}
-        value={value}
-        onChange={onChange}
-        className="pr-10"
-        placeholder="DD-MM-YYYY"
-      />
-      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          variant={"outline"}
+          className={cn(
+            "w-full justify-start text-left font-normal mt-1",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
   </div>
 );
 
 const DeclareResult = () => {
-  // State for the main form
-  const [selectGameData, setSelectGameData] = useState({
-    resultDate: '29-06-2025',
-    gameName: '',
-    session: '',
-  });
+  // State for the main form - using Date object for dates
+  const [resultDate, setResultDate] = useState(new Date());
+  const [gameName, setGameName] = useState('');
+  const [session, setSession] = useState('');
 
-  // State for the history filter
-  const [historyFilterDate, setHistoryFilterDate] = useState('29-06-2025');
+  // State for the history filter - using Date object
+  const [historyFilterDate, setHistoryFilterDate] = useState(new Date());
 
-  // --- NEW: State for modals ---
+  // State for modals
   const [isDeclareModalOpen, setIsDeclareModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -86,22 +107,20 @@ const DeclareResult = () => {
     { id: 7, gameName: 'MADHUR DAY', resultDate: '29 Jun 2025', openDeclareDate: '29 Jun 2025 01:49:27 PM', closeDeclareDate: 'N/A', openPana: '378-8', closePana: '*-***' },
   ];
 
-  // --- NEW: Handlers to open modals ---
+  // --- Handlers to open modals ---
 
   const handleGoClick = (e) => {
     e.preventDefault();
-    if (!selectGameData.gameName || !selectGameData.session) {
+    if (!gameName || !session) {
       alert("Please select a Game Name and Session.");
       return;
     }
-    // Reset form and open the declare modal
     setDeclareFormData({ openPana: '', closePana: '' });
     setIsDeclareModalOpen(true);
   };
   
   const handleEditClick = (game) => {
     setSelectedGame(game);
-    // Pre-fill edit form with existing data
     setEditFormData({ openPana: game.openPana, closePana: game.closePana });
     setIsEditModalOpen(true);
   };
@@ -111,16 +130,18 @@ const DeclareResult = () => {
     setIsDeleteModalOpen(true);
   };
 
-  // --- NEW: Handlers for modal actions ---
+  // --- Handlers for modal actions ---
 
   const handleConfirmDeclare = () => {
     const payload = {
-      ...selectGameData,
+      resultDate: format(resultDate, "yyyy-MM-dd"), // Format date for API
+      gameName,
+      session,
       ...declareFormData,
     };
     console.log("Declaring result with data:", payload);
     alert(`Dummy API call: Declaring result for ${payload.gameName}. Open: ${payload.openPana}, Close: ${payload.closePana}`);
-    setIsDeclareModalOpen(false); // Close modal on success
+    setIsDeclareModalOpen(false);
   };
 
   const handleConfirmEdit = () => {
@@ -132,7 +153,7 @@ const DeclareResult = () => {
     };
     console.log("Saving edited result:", payload);
     alert(`Dummy API call: Updated result for ${payload.gameName}. Open: ${payload.openPana}, Close: ${payload.closePana}`);
-    setIsEditModalOpen(false); // Close modal on success
+    setIsEditModalOpen(false);
   };
   
   const handleConfirmDelete = () => {
@@ -140,9 +161,8 @@ const DeclareResult = () => {
     const payload = { gameId: selectedGame.id, gameName: selectedGame.gameName };
     console.log("Deleting result:", payload);
     alert(`Dummy API call: Deleting result for ${payload.gameName} (ID: ${payload.gameId})`);
-    setIsDeleteModalOpen(false); // Close modal on success
+    setIsDeleteModalOpen(false);
   };
-
 
   return (
     <>
@@ -153,36 +173,29 @@ const DeclareResult = () => {
             <CardTitle className="text-xl font-semibold">Select Game</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Updated form to use the new handler */}
             <form onSubmit={handleGoClick} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
-              <DateInput
+              <DatePicker
                 id="resultDate"
                 label="Result Date"
-                value={selectGameData.resultDate}
-                onChange={(e) => setSelectGameData({ ...selectGameData, resultDate: e.target.value })}
+                date={resultDate}
+                setDate={setResultDate}
               />
-
               <div>
                 <Label htmlFor="gameName" className="text-sm font-medium">Game Name</Label>
-                <Select onValueChange={(value) => setSelectGameData({ ...selectGameData, gameName: value })}>
+                <Select value={gameName} onValueChange={setGameName}>
                   <SelectTrigger id="gameName" className="mt-1">
                     <SelectValue placeholder="Select Name" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="LAXMI MORNING">LAXMI MORNING</SelectItem>
                     <SelectItem value="KARNATAKA DAY">KARNATAKA DAY</SelectItem>
-                    <SelectItem value="MILAN MORNING">MILAN MORNING</SelectItem>
-                    <SelectItem value="KALYAN MORNING">KALYAN MORNING</SelectItem>
-                    <SelectItem value="MADHUR MORNING">MADHUR MORNING</SelectItem>
-                    <SelectItem value="SRIDEVI">SRIDEVI</SelectItem>
-                    <SelectItem value="MADHUR DAY">MADHUR DAY</SelectItem>
+                    {/* Add other games here */}
                   </SelectContent>
                 </Select>
               </div>
-
               <div>
                 <Label htmlFor="session" className="text-sm font-medium">Session</Label>
-                <Select onValueChange={(value) => setSelectGameData({ ...selectGameData, session: value })}>
+                <Select value={session} onValueChange={setSession}>
                   <SelectTrigger id="session" className="mt-1">
                     <SelectValue placeholder="-Select Session-" />
                   </SelectTrigger>
@@ -193,7 +206,6 @@ const DeclareResult = () => {
                   </SelectContent>
                 </Select>
               </div>
-
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">Go</Button>
             </form>
           </CardContent>
@@ -206,14 +218,13 @@ const DeclareResult = () => {
           </CardHeader>
           <CardContent>
             <div className="mb-6 w-full md:w-1/4">
-              <DateInput
+              <DatePicker
                 id="historyDate"
                 label="Select Result Date"
-                value={historyFilterDate}
-                onChange={(e) => setHistoryFilterDate(e.target.value)}
+                date={historyFilterDate}
+                setDate={setHistoryFilterDate}
               />
             </div>
-
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -221,10 +232,11 @@ const DeclareResult = () => {
                     <TableHead>#</TableHead>
                     <TableHead>Game Name</TableHead>
                     <TableHead>Result Date</TableHead>
-                    <TableHead>Open Declare Date</TableHead>
-                    <TableHead>Close Declare Date</TableHead>
+                    <TableHead>Open Declare</TableHead>
+                    <TableHead>Close Declare</TableHead>
                     <TableHead>Open Pana</TableHead>
                     <TableHead>Close Pana</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -235,24 +247,12 @@ const DeclareResult = () => {
                       <TableCell>{game.resultDate}</TableCell>
                       <TableCell>{game.openDeclareDate}</TableCell>
                       <TableCell>{game.closeDeclareDate}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-green-600 min-w-[50px]">{game.openPana}</span>
-                          {/* Updated buttons to call new handlers */}
-                          <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(game)}>Delete</Button>
+                      <TableCell><span className="font-bold text-green-600">{game.openPana}</span></TableCell>
+                      <TableCell><span className="font-bold text-green-600">{game.closePana}</span></TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
                           <Button size="sm" onClick={() => handleEditClick(game)}>Edit</Button>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-green-600 min-w-[50px]">{game.closePana}</span>
-                          {game.closeDeclareDate !== 'N/A' && (
-                            <>
-                              {/* These buttons act on the entire game result, not just the 'close' part */}
-                              <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(game)}>Delete</Button>
-                              <Button size="sm" onClick={() => handleEditClick(game)}>Edit</Button>
-                            </>
-                          )}
+                          <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(game)}>Delete</Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -265,14 +265,13 @@ const DeclareResult = () => {
       </div>
 
       {/* --- MODALS SECTION --- */}
-
       {/* 1. Declare Result Modal */}
       <Dialog open={isDeclareModalOpen} onOpenChange={setIsDeclareModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Declare Result for {selectGameData.gameName}</DialogTitle>
+            <DialogTitle>Declare Result for {gameName}</DialogTitle>
             <DialogDescription>
-              Enter the Open and Close Pana for the game on {selectGameData.resultDate}.
+              Enter the Open and Close Pana for the game on {resultDate ? format(resultDate, "PPP") : ''}.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -298,9 +297,7 @@ const DeclareResult = () => {
             </div>
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancel</Button>
-            </DialogClose>
+            <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
             <Button type="button" onClick={handleConfirmDeclare}>Declare Result</Button>
           </DialogFooter>
         </DialogContent>
@@ -311,9 +308,7 @@ const DeclareResult = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit Result for {selectedGame?.gameName}</DialogTitle>
-            <DialogDescription>
-              Modify the Open and Close Pana values and click Save.
-            </DialogDescription>
+            <DialogDescription>Modify the Open and Close Pana values and click Save.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -336,9 +331,7 @@ const DeclareResult = () => {
             </div>
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancel</Button>
-            </DialogClose>
+            <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
             <Button type="button" onClick={handleConfirmEdit}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
@@ -354,9 +347,7 @@ const DeclareResult = () => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancel</Button>
-            </DialogClose>
+            <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
             <Button type="button" variant="destructive" onClick={handleConfirmDelete}>Confirm Delete</Button>
           </DialogFooter>
         </DialogContent>

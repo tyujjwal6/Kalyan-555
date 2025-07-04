@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { format } from "date-fns"; // For formatting dates
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { cn } from "@/lib/utils"; // A utility from shadcn for conditional class names
+
+// Import shadcn/ui components
 import {
   Card,
   CardContent,
@@ -21,36 +26,54 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 
-// A reusable date input component.
-const DateInput = ({ id, value, onChange, label }) => (
+// A functional DatePicker component using Popover and Calendar
+const DatePicker = ({ date, setDate, label, id }) => (
   <div>
     <Label htmlFor={id} className="text-sm font-medium text-gray-700">
       {label}
     </Label>
-    <div className="relative mt-1">
-      <Input
-        id={id}
-        name="date"
-        value={value}
-        onChange={onChange}
-        className="pr-10"
-        placeholder="DD-MM-YYYY"
-      />
-      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          variant={"outline"}
+          className={cn(
+            "w-full justify-start text-left font-normal mt-1",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
   </div>
 );
 
 // A new component to display the fetched report data cleanly.
+// Updated to format the date object from filters.
 const ReportDisplay = ({ data, filters }) => (
   <div className="w-full text-left p-4">
     <CardTitle className="mb-4 text-center">
-      Sell Report for {filters.gameName} on {filters.date}
+      Sell Report for {filters.gameName} on {filters.date ? format(filters.date, "PPP") : ''}
     </CardTitle>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <ReportItem label="Total Bids" value={data.totalBids.toLocaleString()} />
@@ -78,16 +101,14 @@ const MOCK_REPORT_DATA = {
     }
 };
 
-
 const GameSellReport = () => {
-  // State for filter values
+  // State for filter values - Use Date object for date
   const [filters, setFilters] = useState({
-    date: '29-06-2025',
+    date: new Date(),
     gameName: '',
     gameType: 'all',
   });
   
-  // --- NEW: State for modals and data fetching ---
   const [reportData, setReportData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -99,46 +120,46 @@ const GameSellReport = () => {
     }));
   };
   
-  // Updated handler for form submission to manage modals
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 1. Validation
     if (!filters.gameName) {
       setError("Please select a Game Name to generate a report.");
       return;
     }
 
-    // 2. Start Loading
     setIsLoading(true);
     setError(null);
-    setReportData(null); // Clear previous report
-    console.log("Fetching Starline Sell Report with filters:", filters);
+    setReportData(null);
 
-    // 3. Simulate API call
+    // Format date to a string for the API/console log
+    const apiFilters = {
+        ...filters,
+        date: format(filters.date, 'yyyy-MM-dd')
+    };
+    console.log("Fetching Starline Sell Report with filters:", apiFilters);
+
     setTimeout(() => {
-      // In a real app, you would fetch data here.
-      // We'll use our mock data for the demo.
       setReportData(MOCK_REPORT_DATA);
-      setIsLoading(false); // Stop loading
-    }, 2000); // 2-second delay
+      setIsLoading(false);
+    }, 2000);
   };
   
   return (
     <>
       <div className="min-h-screen w-full bg-gray-50 p-4 sm:p-6 lg:p-8 space-y-8">
-        {/* Starline Sell Report Filter Card */}
         <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="text-xl font-bold font-serif text-gray-700">Starline Sell Report</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
-              <DateInput
+              {/* Use the new functional DatePicker */}
+              <DatePicker
                 id="report-date"
                 label="Date"
-                value={filters.date}
-                onChange={(e) => handleFilterChange('date', e.target.value)}
+                date={filters.date}
+                setDate={(date) => handleFilterChange('date', date)}
               />
 
               <div>
@@ -177,7 +198,6 @@ const GameSellReport = () => {
           </CardContent>
         </Card>
         
-        {/* Report results card - now with conditional rendering */}
         <Card className="shadow-md min-h-[200px] flex items-center justify-center">
             {reportData ? (
                 <ReportDisplay data={reportData} filters={filters} />
@@ -194,17 +214,14 @@ const GameSellReport = () => {
       </div>
 
       {/* --- MODALS SECTION --- */}
-
-      {/* 1. Loading Modal (optional, since button has a spinner, but good for blocking UI) */}
       <Dialog open={isLoading}>
-        <DialogContent className="sm:max-w-xs text-center" hideCloseButton>
+        <DialogContent className="sm:max-w-xs text-center" onInteractOutside={(e) => e.preventDefault()}>
             <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600" />
             <DialogTitle className="mt-4">Generating Report</DialogTitle>
             <DialogDescription>Please wait a moment.</DialogDescription>
         </DialogContent>
       </Dialog>
       
-      {/* 2. Error Modal */}
       <Dialog open={!!error} onOpenChange={() => setError(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -212,7 +229,7 @@ const GameSellReport = () => {
             <DialogDescription className="pt-2">
               {error}
             </DialogDescription>
-          </DialogHeader>
+          </DialogHeader> {/* <-- FIXED: Changed </Header> to </DialogHeader> */}
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button">OK</Button>

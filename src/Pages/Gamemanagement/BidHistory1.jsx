@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { format } from "date-fns"; // For formatting dates
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { cn } from "@/lib/utils"; // A utility from shadcn for conditional class names
+
+// Import shadcn/ui components
 import {
   Card,
   CardContent,
@@ -29,32 +34,50 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar"; // The actual interactive calendar
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon, Loader2 } from 'lucide-react'; // Import Loader2 for the spinner
 
-// A reusable date input component with a calendar icon to keep the code clean.
-const DateInput = ({ id, value, onChange, label }) => (
+// A functional DatePicker component using Popover and Calendar
+const DatePicker = ({ date, setDate, label, id }) => (
   <div>
     <Label htmlFor={id} className="text-sm font-medium text-gray-700">
       {label}
     </Label>
-    <div className="relative mt-1">
-      <Input
-        id={id}
-        name="date"
-        value={value}
-        onChange={onChange}
-        className="pr-10"
-        placeholder="DD-MM-YYYY"
-      />
-      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          variant={"outline"}
+          className={cn(
+            "w-full justify-start text-left font-normal mt-1",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
   </div>
 );
 
-// Mock data to display after a successful "API call"
+
+// Mock data
 const MOCK_BID_HISTORY = [
   { id: 1, userName: 'user_101', bidTxId: 'TXN738291', gameName: 'Game One', gameType: 'Single', digit: '5', paana: 'N/A', points: 50 },
   { id: 2, userName: 'user_204', bidTxId: 'TXN738292', gameName: 'Game One', gameType: 'Single', digit: '8', paana: 'N/A', points: 25 },
@@ -62,18 +85,18 @@ const MOCK_BID_HISTORY = [
 ];
 
 const BidHistory = () => {
-  // State for filters remains the same
+  // Use a Date object for the date filter
   const [filters, setFilters] = useState({
-    date: '29-06-2025',
+    date: new Date(),
     gameName: '',
     gameType: '',
   });
+
+  const [bidHistoryData, setBidHistoryData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   
-  // --- NEW: State for modals and data ---
-  const [bidHistoryData, setBidHistoryData] = useState([]); // To hold the fetched data
-  const [isLoading, setIsLoading] = useState(false); // To control the loading modal
-  const [error, setError] = useState(null); // To control the error modal
-  
+  // A single handler for all filter changes
   const handleFilterChange = (name, value) => {
     setFilters(prevFilters => ({
       ...prevFilters,
@@ -81,28 +104,28 @@ const BidHistory = () => {
     }));
   };
   
-  // Updated submit handler to manage loading and error states
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (!filters.gameName || !filters.gameType) {
       setError("Please select both a Game Name and a Game Type.");
       return;
     }
 
-    // Start the loading process
     setIsLoading(true);
-    setBidHistoryData([]); // Clear previous results
-    setError(null); // Clear previous errors
+    setBidHistoryData([]);
+    setError(null);
 
-    console.log("Fetching Bid History Report with filters:", filters);
+    // Format the date to a string for the "API call"
+    const apiFilters = {
+      ...filters,
+      date: format(filters.date, 'yyyy-MM-dd'),
+    };
+    console.log("Fetching Bid History Report with filters:", apiFilters);
     
-    // Simulate an API call with a 1.5-second delay
     setTimeout(() => {
-      // For this demo, we'll just return the same mock data regardless of filters
       setBidHistoryData(MOCK_BID_HISTORY);
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }, 1500);
   };
   
@@ -116,11 +139,12 @@ const BidHistory = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
-              <DateInput
+              {/* Use the new DatePicker component */}
+              <DatePicker
                 id="report-date"
                 label="Date"
-                value={filters.date}
-                onChange={(e) => handleFilterChange('date', e.target.value)}
+                date={filters.date}
+                setDate={(date) => handleFilterChange('date', date)}
               />
 
               <div>
@@ -152,7 +176,7 @@ const BidHistory = () => {
               </div>
 
               <div>
-                <Label className="text-sm font-medium text-white">.</Label> {/* Invisible label for alignment */}
+                <Label className="text-sm font-medium text-transparent select-none">.</Label> {/* Spacer label */}
                 <Button type="submit" disabled={isLoading} className="w-full mt-1 bg-blue-600 hover:bg-blue-700">
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {isLoading ? 'Loading...' : 'Submit'}
@@ -197,7 +221,7 @@ const BidHistory = () => {
                   ) : (
                     <TableRow>
                       <TableCell colSpan="7" className="text-center text-gray-500 py-10">
-                        {isLoading ? "Fetching data..." : "No bid history found. Please use the filters above to generate a report."}
+                        {isLoading ? "Fetching data..." : "No bid history found. Please use the filters to generate a report."}
                       </TableCell>
                     </TableRow>
                   )}
@@ -209,18 +233,14 @@ const BidHistory = () => {
       </div>
 
       {/* --- MODALS SECTION --- */}
-
-      {/* 1. Loading Modal (Note: This is now integrated into the button and table message, but a modal is also a good option) */}
-      {/* If a full-screen blocking modal is preferred, you can use this: */}
       <Dialog open={isLoading}>
-        <DialogContent className="sm:max-w-xs text-center" hideCloseButton>
+        <DialogContent className="sm:max-w-xs text-center" onInteractOutside={(e) => e.preventDefault()}>
             <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600" />
             <DialogTitle className="mt-4">Fetching Report</DialogTitle>
             <DialogDescription>Please wait while we gather the data.</DialogDescription>
         </DialogContent>
       </Dialog>
       
-      {/* 2. Error Modal */}
       <Dialog open={!!error} onOpenChange={() => setError(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

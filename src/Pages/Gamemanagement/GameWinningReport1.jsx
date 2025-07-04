@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { format } from "date-fns"; // For formatting dates
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { cn } from "@/lib/utils"; // A utility from shadcn for conditional class names
+
+// Import shadcn/ui components
 import {
   Card,
   CardContent,
@@ -29,32 +34,49 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar"; // The actual interactive calendar
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon, Loader2 } from 'lucide-react'; // Import Loader2 for spinner
 
-// A reusable date input component to keep the code clean and consistent.
-const DateInput = ({ id, value, onChange, label }) => (
+// A functional DatePicker component using Popover and Calendar
+const DatePicker = ({ date, setDate, label, id }) => (
   <div>
     <Label htmlFor={id} className="text-sm font-medium text-gray-700">
       {label}
     </Label>
-    <div className="relative mt-1">
-      <Input
-        id={id}
-        name="date"
-        value={value}
-        onChange={onChange}
-        className="pr-10"
-        placeholder="DD-MM-YYYY"
-      />
-      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          variant={"outline"}
+          className={cn(
+            "w-full justify-start text-left font-normal mt-1",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
   </div>
 );
 
-// Mock data to display after a successful "API call"
+// Mock data
 const MOCK_WINNING_HISTORY = [
     { id: 1, userName: 'player_007', gameName: 'Starline Game 1', gameType: 'Single', pana: 'N/A', digit: '4', points: '100', amount: '950', txId: 'WIN-1023', txDate: '29 Jun 2025' },
     { id: 2, userName: 'user_x', gameName: 'Starline Game 1', gameType: 'Double', pana: '22', digit: 'N/A', points: '50', amount: '4750', txId: 'WIN-1024', txDate: '29 Jun 2025' },
@@ -62,16 +84,15 @@ const MOCK_WINNING_HISTORY = [
 ];
 
 const GameWinningReport = () => {
-  // State for filter values
+  // Use a Date object for the date filter
   const [filters, setFilters] = useState({
-    date: '29-06-2025',
+    date: new Date(),
     gameName: '',
   });
-  
-  // --- NEW: State for modals and data ---
-  const [winningHistory, setWinningHistory] = useState([]); // To hold the fetched data
-  const [isLoading, setIsLoading] = useState(false); // To control the loading modal
-  const [error, setError] = useState(null); // To control the error modal
+
+  const [winningHistory, setWinningHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleFilterChange = (name, value) => {
     setFilters(prevFilters => ({
@@ -80,28 +101,29 @@ const GameWinningReport = () => {
     }));
   };
 
-  // Updated handler for form submission to manage modals
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 1. Validation
     if (!filters.gameName) {
       setError("Please select a Game Name to generate the report.");
       return;
     }
 
-    // 2. Start Loading Process
     setIsLoading(true);
     setError(null);
-    setWinningHistory([]); // Clear previous results
-    console.log("Fetching Winning Report with filters:", filters);
+    setWinningHistory([]);
+    
+    // Format date for the API/console log
+    const apiFilters = {
+        ...filters,
+        date: format(filters.date, 'yyyy-MM-dd')
+    };
+    console.log("Fetching Winning Report with filters:", apiFilters);
 
-    // 3. Simulate API call
     setTimeout(() => {
-      // On success, populate data and stop loading
       setWinningHistory(MOCK_WINNING_HISTORY);
       setIsLoading(false);
-    }, 1500); // 1.5-second delay
+    }, 1500);
   };
 
   return (
@@ -114,11 +136,12 @@ const GameWinningReport = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
-              <DateInput
+              {/* Use the new functional DatePicker */}
+              <DatePicker
                 id="report-date"
                 label="Date"
-                value={filters.date}
-                onChange={(e) => handleFilterChange('date', e.target.value)}
+                date={filters.date}
+                setDate={(date) => handleFilterChange('date', date)}
               />
               <div>
                 <Label htmlFor="game-name" className="text-sm font-medium">Game Name</Label>
@@ -191,17 +214,14 @@ const GameWinningReport = () => {
       </div>
 
       {/* --- MODALS SECTION --- */}
-      
-      {/* 1. Loading Modal */}
       <Dialog open={isLoading}>
-        <DialogContent className="sm:max-w-xs text-center" hideCloseButton>
+        <DialogContent className="sm:max-w-xs text-center" onInteractOutside={(e) => e.preventDefault()}>
             <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600" />
             <DialogTitle className="mt-4">Fetching Report</DialogTitle>
             <DialogDescription>Please wait a moment.</DialogDescription>
         </DialogContent>
       </Dialog>
       
-      {/* 2. Error Modal */}
       <Dialog open={!!error} onOpenChange={() => setError(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { format } from "date-fns"; //
+import { Calendar as CalendarIcon } from 'lucide-react';
+
+// Import shadcn/ui components
 import {
   Card,
   CardContent,
@@ -29,39 +33,59 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar"; // The actual calendar component
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { cn } from "@/lib/utils"; // Assumes you have this utility function from shadcn/ui setup
 
-// A reusable date input component to keep the code clean and consistent.
-const DateInput = ({ id, value, onChange, label }) => (
+// A reusable DatePicker component based on shadcn/ui documentation.
+// This provides a real calendar popup and fixes the crashing issue.
+const DatePicker = ({ date, setDate, label, id }) => (
   <div>
-    <Label htmlFor={id} className="text-sm font-medium text-gray-700">
+     <Label htmlFor={id} className="text-sm font-medium text-gray-700">
       {label}
     </Label>
-    <div className="relative mt-1">
-      <Input
-        id={id}
-        value={value}
-        onChange={onChange}
-        className="pr-10"
-        placeholder="DD-MM-YYYY"
-      />
-      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          variant={"outline"}
+          className={cn(
+            "w-full justify-start text-left font-normal mt-1",
+            !date && "text-muted-foreground"
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, "PPP") : <span>Pick a date</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
   </div>
 );
 
+
 const DeclareResults = () => {
   // --- STATE MANAGEMENT ---
-  const [selectGameData, setSelectGameData] = useState({
-    resultDate: '29-06-2025',
-    gameName: '',
-  });
-  const [historyFilterDate, setHistoryFilterDate] = useState('29-06-2025');
+  // Use Date objects for dates, which is required for the Calendar component
+  const [resultDate, setResultDate] = useState(new Date());
+  const [gameName, setGameName] = useState('');
+  const [historyFilterDate, setHistoryFilterDate] = useState(new Date());
   
-  // --- NEW: State for modals ---
+  // State for modals
   const [isDeclareModalOpen, setIsDeclareModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
@@ -86,7 +110,7 @@ const DeclareResults = () => {
   // Handles the "Go" button click to open the declare result modal
   const handleGoClick = (e) => {
     e.preventDefault();
-    if (!selectGameData.gameName) {
+    if (!gameName) {
       alert("Please select a Game Name.");
       return;
     }
@@ -94,7 +118,7 @@ const DeclareResults = () => {
     setIsDeclareModalOpen(true);
   };
 
-  // Handles clicking the "Delete" button in the table to open the confirmation modal
+  // Handles clicking the "Delete" button in the table
   const handleDeleteClick = (game) => {
     setSelectedGame(game);
     setIsDeleteModalOpen(true);
@@ -106,7 +130,11 @@ const DeclareResults = () => {
         alert("Please enter the result number.");
         return;
     }
-    const payload = { ...selectGameData, ...declareFormData };
+    const payload = { 
+      resultDate: format(resultDate, "yyyy-MM-dd"), // Format date for API
+      gameName, 
+      ...declareFormData 
+    };
     console.log("Declaring result with data:", payload);
     alert(`Dummy API call: Declaring result for ${payload.gameName} with number ${payload.number}`);
     setIsDeclareModalOpen(false); // Close modal on success
@@ -131,18 +159,17 @@ const DeclareResults = () => {
             <CardTitle className="text-xl font-semibold">Select Game</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Updated form to trigger the modal */}
             <form onSubmit={handleGoClick} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-end">
-              <DateInput
+              <DatePicker
                 id="resultDate"
                 label="Result Date"
-                value={selectGameData.resultDate}
-                onChange={(e) => setSelectGameData(prev => ({...prev, resultDate: e.target.value}))}
+                date={resultDate}
+                setDate={setResultDate}
               />
 
               <div>
                 <Label htmlFor="gameName" className="text-sm font-medium">Game Name</Label>
-                <Select value={selectGameData.gameName} onValueChange={(value) => setSelectGameData(prev => ({ ...prev, gameName: value }))}>
+                <Select value={gameName} onValueChange={setGameName}>
                   <SelectTrigger id="gameName" className="mt-1">
                     <SelectValue placeholder="Select Name" />
                   </SelectTrigger>
@@ -166,11 +193,11 @@ const DeclareResults = () => {
           </CardHeader>
           <CardContent>
             <div className="mb-6 w-full md:w-1/4">
-              <DateInput
+               <DatePicker
                 id="historyDate"
                 label="Select Result Date"
-                value={historyFilterDate}
-                onChange={(e) => setHistoryFilterDate(e.target.value)}
+                date={historyFilterDate}
+                setDate={setHistoryFilterDate}
               />
             </div>
             
@@ -195,7 +222,6 @@ const DeclareResults = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-green-600 min-w-[50px]">{game.number}</span>
-                          {/* Updated button to trigger the modal */}
                           <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(game)}>Delete</Button>
                         </div>
                       </TableCell>
@@ -214,7 +240,7 @@ const DeclareResults = () => {
       <Dialog open={isDeclareModalOpen} onOpenChange={setIsDeclareModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Declare Result for {selectGameData.gameName}</DialogTitle>
+            <DialogTitle>Declare Result for {gameName}</DialogTitle>
             <DialogDescription>
               Enter the result number for the selected game and date.
             </DialogDescription>
