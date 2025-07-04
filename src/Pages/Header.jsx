@@ -1,7 +1,5 @@
 import React from 'react';
-// --- NEW: Import Link for navigation ---
 import { Link } from 'react-router-dom';
-// --- NEW: Import a new icon ---
 import { Menu, Maximize, User, Settings, LogOut, ChevronDown, KeyRound } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -26,8 +24,6 @@ const Header = ({ onMenuClick }) => {
 
   const handleLogout = () => {
     console.log("User logout initiated...");
-    // In a real app, you would clear the user's session/token and redirect
-    // For now, we'll just log to the console.
     alert("Dummy API Call: User has been logged out.");
     // Example navigation on logout: window.location.href = '/login';
   };
@@ -35,7 +31,8 @@ const Header = ({ onMenuClick }) => {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 sm:px-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onMenuClick} className="lg:hidden"> {/* Often hidden on larger screens */}
+        {/* --- FIXED: Removed the "lg:hidden" class to make the button always visible --- */}
+        <Button variant="ghost" size="icon" onClick={onMenuClick}>
           <Menu className="h-6 w-6 text-gray-600" />
         </Button>
         <Link to="/" className="text-lg font-semibold text-blue-600 hover:text-blue-700">
@@ -70,8 +67,6 @@ const Header = ({ onMenuClick }) => {
               <span>Settings</span>
             </DropdownMenuItem>
 
-            {/* --- NEW: Forgot Password link added here --- */}
-            {/* Using `asChild` allows the Link component to be the actual clickable element */}
             <DropdownMenuItem asChild>
               <Link to="/forgot-password">
                 <KeyRound className="mr-2 h-4 w-4" />
