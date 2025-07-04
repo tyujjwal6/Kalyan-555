@@ -14,12 +14,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -36,9 +45,13 @@ const SortableHeader = ({ children }) => (
 );
 
 const ResultHistory = () => {
-    // State for managing search query and current page for API calls
+    // State for managing UI interactions
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    
+    // --- NEW: State for the details modal ---
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [selectedResult, setSelectedResult] = useState(null); // To store data of the clicked row
 
     // Mock data that matches the screenshot
     const gameHistory = [
@@ -54,103 +67,152 @@ const ResultHistory = () => {
         { id: 10, gameName: 'STARLINE-4', resultDate: '28 Jun 2025', declareDate: '28 Jun 2025 03:22:19 PM', number: '228-2' },
     ];
     
-    // --- Dummy API Handlers ---
+    // --- MODAL AND API HANDLERS ---
 
-    // Handles changes to the search input, simulating an API search query
+    // NEW: Handles a row click to open the details modal
+    const handleRowClick = (result) => {
+        setSelectedResult(result);
+        setIsDetailsModalOpen(true);
+    };
+
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
         console.log(`Dummy API Call: Searching for "${e.target.value}"`);
     };
     
-    // Handles changing the page, simulating fetching a new page of results
     const handlePageChange = (page) => {
         setCurrentPage(page);
         console.log(`Dummy API Call: Fetching page ${page}`);
     };
 
-    // Handles changing the number of entries to show per page
     const handleEntriesChange = (value) => {
       console.log(`Dummy API Call: Setting entries per page to ${value}`);
     }
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-            <Card className="shadow-md">
-                <CardHeader>
-                    <CardTitle className="text-xl font-semibold">Game Result History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                        <div className="flex items-center space-x-2">
-                            <Label htmlFor="show-entries" className="text-sm font-normal shrink-0">Show</Label>
-                            <Select defaultValue="10" onValueChange={handleEntriesChange}>
-                                <SelectTrigger id="show-entries" className="w-[80px]">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="10">10</SelectItem>
-                                    <SelectItem value="20">20</SelectItem>
-                                    <SelectItem value="50">50</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <span className="text-sm">entries</span>
+        <>
+            <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+                <Card className="shadow-md">
+                    <CardHeader>
+                        <CardTitle className="text-xl font-semibold">Game Result History</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                            <div className="flex items-center space-x-2">
+                                <Label htmlFor="show-entries" className="text-sm font-normal shrink-0">Show</Label>
+                                <Select defaultValue="10" onValueChange={handleEntriesChange}>
+                                    <SelectTrigger id="show-entries" className="w-[80px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="10">10</SelectItem>
+                                        <SelectItem value="20">20</SelectItem>
+                                        <SelectItem value="50">50</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <span className="text-sm">entries</span>
+                            </div>
+                            <div className="flex items-center space-x-2 w-full sm:w-auto">
+                                <Label htmlFor="search-history" className="text-sm font-normal shrink-0">Search:</Label>
+                                <Input id="search-history" className="w-full sm:w-auto" value={searchQuery} onChange={handleSearch} />
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-2 w-full sm:w-auto">
-                            <Label htmlFor="search-history" className="text-sm font-normal shrink-0">Search:</Label>
-                            <Input id="search-history" className="w-full sm:w-auto" value={searchQuery} onChange={handleSearch} />
-                        </div>
-                    </div>
 
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>#</TableHead>
-                                    <SortableHeader>Game Name</SortableHeader>
-                                    <SortableHeader>Result Date</SortableHeader>
-                                    <TableHead>Declare Date</TableHead>
-                                    <SortableHeader>Number</SortableHeader>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {gameHistory.map((game) => (
-                                    <TableRow key={game.id}>
-                                        <TableCell>{game.id}</TableCell>
-                                        <TableCell className="font-medium">{game.gameName}</TableCell>
-                                        <TableCell>{game.resultDate}</TableCell>
-                                        <TableCell>{game.declareDate}</TableCell>
-                                        <TableCell className="font-semibold text-green-600">{game.number}</TableCell>
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>#</TableHead>
+                                        <SortableHeader>Game Name</SortableHeader>
+                                        <SortableHeader>Result Date</SortableHeader>
+                                        <TableHead>Declare Date</TableHead>
+                                        <SortableHeader>Number</SortableHeader>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-6">
-                        <p className="text-sm text-gray-600">
-                            Showing 1 to 10 of 1,106 entries
-                        </p>
-                        <div className="flex items-center space-x-1">
-                            <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</Button>
-                            {[1, 2, 3, 4, 5].map(page => (
-                                <Button
-                                  key={page}
-                                  size="sm"
-                                  variant={currentPage === page ? 'default' : 'outline'}
-                                  className={currentPage === page ? 'bg-blue-600 hover:bg-blue-700' : ''}
-                                  onClick={() => handlePageChange(page)}
-                                >
-                                  {page}
-                                </Button>
-                            ))}
-                            <span className="px-2">...</span>
-                            <Button variant="outline" size="sm" onClick={() => handlePageChange(111)}>111</Button>
-                            <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage + 1)}>Next</Button>
+                                </TableHeader>
+                                <TableBody>
+                                    {gameHistory.map((game) => (
+                                        // UPDATED: The TableRow is now a clickable button
+                                        <TableRow 
+                                          key={game.id}
+                                          onClick={() => handleRowClick(game)}
+                                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <TableCell>{game.id}</TableCell>
+                                            <TableCell className="font-medium">{game.gameName}</TableCell>
+                                            <TableCell>{game.resultDate}</TableCell>
+                                            <TableCell>{game.declareDate}</TableCell>
+                                            <TableCell className="font-semibold text-green-600">{game.number}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
+
+                        <div className="flex items-center justify-between mt-6">
+                            <p className="text-sm text-gray-600">
+                                Showing 1 to 10 of 1,106 entries
+                            </p>
+                            <div className="flex items-center space-x-1">
+                                <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</Button>
+                                {[1, 2, 3, 4, 5].map(page => (
+                                    <Button
+                                      key={page}
+                                      size="sm"
+                                      variant={currentPage === page ? 'default' : 'outline'}
+                                      className={currentPage === page ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                                      onClick={() => handlePageChange(page)}
+                                    >
+                                      {page}
+                                    </Button>
+                                ))}
+                                <span className="px-2">...</span>
+                                <Button variant="outline" size="sm" onClick={() => handlePageChange(111)}>111</Button>
+                                <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage + 1)}>Next</Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* --- NEW: Result Details Modal --- */}
+            <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Result Details</DialogTitle>
+                  <DialogDescription>
+                    Detailed information for {selectedResult?.gameName}.
+                  </DialogDescription>
+                </DialogHeader>
+                {selectedResult && (
+                  <div className="grid gap-4 py-4">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-gray-600">Game Name:</Label>
+                      <span className="font-semibold">{selectedResult.gameName}</span>
                     </div>
-                </CardContent>
-            </Card>
-        </div>
+                    <div className="flex justify-between items-center">
+                      <Label className="text-gray-600">Result Date:</Label>
+                      <span className="font-semibold">{selectedResult.resultDate}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <Label className="text-gray-600">Declare Date:</Label>
+                      <span className="font-semibold">{selectedResult.declareDate}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <Label className="text-gray-600">Result Number:</Label>
+                      <span className="font-bold text-lg text-green-600">{selectedResult.number}</span>
+                    </div>
+                  </div>
+                )}
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button type="button" variant="secondary">
+                      Close
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+        </>
     );
 };
 

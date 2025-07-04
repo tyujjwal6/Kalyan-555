@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Download, Trash2, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,131 +13,146 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Toaster, toast } from 'sonner';
+// --- NEW: Import Dialog components ---
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
-/**
- * ClearData Component
- * 
- * Provides an interface for an admin to download or clear historical data up to a specified date.
- * Each action is handled independently and communicates with a dummy API.
- */
+
+// --- NEW: Reusable Confirmation Modal ---
+const ActionConfirmationModal = ({ isOpen, onOpenChange, action, date, onConfirm, isSubmitting }) => {
+  const isDestructive = action.type === 'clear_data';
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className={cn(isDestructive && "text-red-600")}>
+            Confirm: {action.name}
+          </DialogTitle>
+          <DialogDescription>
+            Are you sure you want to perform this action for all data up to and including <span className="font-semibold">{format(date, "dd-MM-yyyy")}</span>? 
+            {isDestructive && <span className="font-bold text-red-500 block mt-2">This action cannot be undone.</span>}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose asChild><Button variant="outline" disabled={isSubmitting}>Cancel</Button></DialogClose>
+          <Button
+            variant={isDestructive ? 'destructive' : 'default'}
+            onClick={onConfirm}
+            disabled={isSubmitting}
+          >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Confirm & Proceed
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const ClearData = () => {
-  // Set the initial date to match the screenshot "30-06-2025"
   const [date, setDate] = useState(new Date("2025-06-30T12:00:00Z"));
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  /**
-   * Generic handler for all button actions.
-   * @param {string} actionType - A unique identifier for the action (e.g., 'downloadBid', 'cleanData').
-   * @param {string} actionName - A user-friendly name for the action used in notifications.
-   */
-  const handleAction = (actionType, actionName) => {
+  // --- NEW: State for the modal ---
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentAction, setCurrentAction] = useState({ type: '', name: '' });
+
+  // --- NEW: Function to open the confirmation modal ---
+  const handleActionClick = (actionType, actionName) => {
     if (!date) {
       toast.error("Please select a date before proceeding.");
       return;
     }
+    setCurrentAction({ type: actionType, name: actionName });
+    setIsModalOpen(true);
+  };
 
-    // Use Sonner's promise toast for a great UX during API calls
+  // --- MODAL: The actual submission logic, called from the modal ---
+  const handleConfirmAction = () => {
+    const { type, name } = currentAction;
     const promise = () => new Promise(async (resolve, reject) => {
-      // Prepare the data payload in a backend-friendly format
-      const payload = {
-        action: actionType,
-        dateTo: format(date, "yyyy-MM-dd"), // Standard ISO-like format is best for APIs
-      };
+      setIsSubmitting(true);
+      const payload = { action: type, dateTo: format(date, "yyyy-MM-dd") };
       
       try {
-        // Simulate hitting a dummy API endpoint
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
-          const responseData = await response.json();
-          console.log(`API Response for ${actionName}:`, responseData);
-          resolve(responseData);
-        } else {
-          // This will trigger the error state of the toast
-          reject(new Error('API submission failed'));
-        }
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
+        console.log(`API Response for ${name}:`, { success: true });
+        resolve({ name });
       } catch (error) {
-        console.error(`Failed to ${actionName}:`, error);
-        reject(error);
+        console.error(`Failed to ${name}:`, error);
+        reject(new Error(`Failed to initiate '${name}'. Please try again.`));
       }
     });
 
     toast.promise(promise, {
-      loading: `${actionName}...`,
-      success: `The '${actionName}' process has been initiated successfully.`,
-      error: `Failed to initiate '${actionName}'. Please try again.`,
+      loading: `${name}...`,
+      success: (data) => {
+        setIsSubmitting(false);
+        setIsModalOpen(false);
+        return `The '${data.name}' process has been initiated successfully.`;
+      },
+      error: (err) => {
+        setIsSubmitting(false);
+        return err.message;
+      },
     });
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 p-4 sm:p-8">
+    <>
       <Toaster position="top-right" richColors />
-      <Card className="w-full max-w-5xl mx-auto shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl font-serif text-gray-800">Clear Data</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-4">
-            {/* Date Picker Section */}
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="date-to" className="text-base font-semibold text-gray-800">
-                Date To
-              </Label>
-              <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="date-to"
-                    variant={"outline"}
-                    className={cn(
-                      "w-[240px] justify-start text-left font-normal h-11 text-base",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "dd-MM-yyyy") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(selectedDate) => {
-                        setDate(selectedDate);
-                        setIsPopoverOpen(false); // Close popover on date selection
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+      {/* RESPONSIVE: Added padding for different screen sizes */}
+      <div className="w-full min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+        <Card className="w-full max-w-5xl mx-auto shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl font-serif text-gray-800">Clear Data</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* RESPONSIVE: Flex container stacks on mobile */}
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-end gap-4">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="date-to" className="text-base font-semibold text-gray-800">Date To</Label>
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button id="date-to" variant={"outline"} className={cn("w-full sm:w-[240px] justify-start text-left font-normal h-11 text-base",!date && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, "dd-MM-yyyy") : <span>Pick a date</span>}</Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={(d) => { setDate(d); setIsPopoverOpen(false); }} initialFocus /></PopoverContent>
+                </Popover>
+              </div>
 
-            {/* Action Buttons */}
-            <Button 
-              className="bg-blue-600 hover:bg-blue-700 h-11 px-6 text-base"
-              onClick={() => handleAction('download_bid_history', 'Download Bid History')}
-            >
-              Download Bid History
-            </Button>
-            <Button 
-              className="bg-blue-600 hover:bg-blue-700 h-11 px-6 text-base"
-              onClick={() => handleAction('download_wallet_history', 'Download Wallet History')}
-            >
-              Download Wallet History
-            </Button>
-            <Button 
-              className="bg-blue-600 hover:bg-blue-700 h-11 px-6 text-base"
-              onClick={() => handleAction('clear_data', 'Clean Data')}
-            >
-              Clean Data
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              {/* Action Buttons now open the modal */}
+              <Button className="bg-blue-600 hover:bg-blue-700 h-11 px-6 text-base" onClick={() => handleActionClick('download_bid_history', 'Download Bid History')}>
+                <Download className="mr-2 h-4 w-4" /> Download Bid History
+              </Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 h-11 px-6 text-base" onClick={() => handleActionClick('download_wallet_history', 'Download Wallet History')}>
+                <Download className="mr-2 h-4 w-4" /> Download Wallet History
+              </Button>
+              <Button variant="destructive" className="h-11 px-6 text-base" onClick={() => handleActionClick('clear_data', 'Clean Data')}>
+                <Trash2 className="mr-2 h-4 w-4" /> Clean Data
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* --- MODAL: The single, reusable confirmation modal --- */}
+      <ActionConfirmationModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        action={currentAction}
+        date={date}
+        onConfirm={handleConfirmAction}
+        isSubmitting={isSubmitting}
+      />
+    </>
   );
 };
 

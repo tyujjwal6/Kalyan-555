@@ -96,7 +96,7 @@ const galiDisswarLinks = [
     { to: "/jodi-digit", label: "Jodi Digit" },
     { to: "/single-pana", label: "Single Pana" },
     { to: "/double-pana", label: "Double Pana" },
-    { to: "/tripple-pana", label: "Tripple Pana" },
+    { to: "/trpple-pana", label: "Tripple Pana" },
     { to: "/half-sangam", label: "Half Sangam" },
     { to: "/full-sangam", label: "Full Sangam" },
   ];

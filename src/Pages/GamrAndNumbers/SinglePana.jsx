@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
+import { cn } from "@/lib/utils";
+import { Send, Loader2 } from 'lucide-react';
+
+// Import necessary components from your shadcn/ui setup
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Send } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
-// Data structured to match the image, including the custom two-line display.
-// The `value` is the actual 3-digit number, and `display` dictates how it's rendered.
+// Data structured to match the image
 const panaData = [
   { ank: '0', panas: [ { value: '127', display: ['127'] }, { value: '136', display: ['136'] }, { value: '145', display: ['145'] }, { value: '190', display: ['190'] }, { value: '235', display: ['23', '5'] }, { value: '280', display: ['28', '0'] }, { value: '370', display: ['37', '0'] }, { value: '460', display: ['46', '0'] }, { value: '569', display: ['56', '9'] }, { value: '578', display: ['57', '8'] } ] },
   { ank: '1', panas: [ { value: '128', display: ['128'] }, { value: '137', display: ['137'] }, { value: '146', display: ['146'] }, { value: '236', display: ['23', '6'] }, { value: '245', display: ['24', '5'] }, { value: '290', display: ['29', '0'] }, { value: '380', display: ['38', '0'] }, { value: '470', display: ['47', '0'] }, { value: '560', display: ['56', '0'] }, { value: '678', display: ['67', '8'] }, { value: '579', display: ['57', '9'] } ] },
@@ -20,19 +31,12 @@ const panaData = [
 ];
 
 
-/**
- * SinglePana Component
- * 
- * Displays a list of "pana" numbers, grouped by their "single ank".
- * - Allows users to select multiple pana numbers.
- * - Renders some numbers with a special two-line format.
- * - Provides a submit button to send selected data to a dummy API.
- * - Formats data for easy backend integration.
- */
 const SinglePana = () => {
   const [selectedPanas, setSelectedPanas] = useState([]);
+  // --- MODAL: State for modals and submission status ---
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSelectPana = (panaValue) => {
     setSelectedPanas(prevSelected =>
@@ -42,113 +46,156 @@ const SinglePana = () => {
     );
   };
 
-  const handleSubmit = async () => {
+  // --- MODAL: This now opens the confirmation modal ---
+  const handleOpenConfirmation = () => {
     if (selectedPanas.length === 0) {
-      setFeedbackMessage('Please select at least one pana before submitting.');
-      setTimeout(() => setFeedbackMessage(''), 3000);
+      setError('Please select at least one pana before submitting.');
       return;
     }
+    setIsConfirmModalOpen(true);
+  };
 
+  // --- MODAL: This function handles the actual submission from the modal ---
+  const handleConfirmSubmit = async () => {
     setIsSubmitting(true);
-    setFeedbackMessage(`Submitting ${selectedPanas.length} panas...`);
+    setError(null);
 
     try {
-      // Format data for backend API
       const payload = {
         selectedSinglePanas: selectedPanas,
         timestamp: new Date().toISOString(),
       };
+      
+      console.log('API Request Payload:', payload);
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
+      console.log('API Response: Success');
 
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) throw new Error('Network response was not ok');
-
-      const responseData = await response.json();
-      console.log('API Response:', responseData);
-
-      setFeedbackMessage(`Successfully submitted ${selectedPanas.length} panas!`);
+      alert(`Successfully submitted ${selectedPanas.length} panas!`);
       setSelectedPanas([]);
 
-    } catch (error) {
-      console.error('Submission failed:', error);
-      setFeedbackMessage('An error occurred. Please try again.');
+    } catch (apiError) {
+      console.error('Submission failed:', apiError);
+      setError('An error occurred during submission. Please try again.');
     } finally {
       setIsSubmitting(false);
-      setTimeout(() => setFeedbackMessage(''), 5000);
+      setIsConfirmModalOpen(false);
     }
   };
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen w-full flex items-start justify-center p-4 sm:p-8">
-      <Card className="w-full max-w-7xl bg-white shadow-sm rounded-xl">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-900">
-            Single Pana Numbers
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-10">
-            {panaData.map(({ ank, panas }) => (
-              <div key={ank}>
-                <div className="flex items-center gap-4 mb-4">
-                  <h3 className="text-lg font-medium text-gray-700">Single Ank</h3>
-                  <div className="w-12 h-12 flex items-center justify-center text-lg font-bold text-red-600 bg-red-50 border-2 border-red-400 rounded-md">
-                    {ank}
+    <>
+      {/* RESPONSIVE: Added padding for different screen sizes */}
+      <div className="bg-[#f8fafc] min-h-screen w-full flex items-start justify-center p-4 sm:p-6 lg:p-8">
+        <Card className="w-full max-w-7xl bg-white shadow-sm rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-900">
+              Single Pana Numbers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-8">
+              {panaData.map(({ ank, panas }) => (
+                <div key={ank}>
+                  <div className="flex items-center gap-4 mb-4">
+                    <h3 className="text-lg font-medium text-gray-700">Single Ank</h3>
+                    <div className="w-12 h-12 flex items-center justify-center text-lg font-bold text-red-600 bg-red-50 border-2 border-red-400 rounded-md">
+                      {ank}
+                    </div>
+                  </div>
+                  {/* RESPONSIVE: Adjusted gap for smaller screens */}
+                  <div className="flex flex-wrap gap-2 sm:gap-3">
+                    {panas.map((pana) => {
+                      const isSelected = selectedPanas.includes(pana.value);
+                      return (
+                        <button
+                          key={pana.value}
+                          type="button"
+                          onClick={() => handleSelectPana(pana.value)}
+                          className={cn(
+                            // RESPONSIVE: Slightly smaller buttons on mobile
+                            "w-16 h-14 sm:w-20 sm:h-16 flex items-center justify-center border rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                            isSelected
+                              ? "bg-green-600 text-white border-green-700 ring-green-500 shadow-lg"
+                              : "bg-[#e9f7f5] text-slate-800 border-[#b9e7e1] hover:bg-[#d1eae5] hover:border-[#a0d9d1]"
+                          )}
+                          aria-pressed={isSelected}
+                        >
+                          {pana.display.length === 1 ? (
+                            <span className="text-lg sm:text-xl font-medium">{pana.display[0]}</span>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center leading-tight">
+                              <span className="text-md sm:text-lg font-medium">{pana.display[0]}</span>
+                              <span className="text-xs sm:text-sm font-medium">{pana.display[1]}</span>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  {panas.map((pana) => {
-                    const isSelected = selectedPanas.includes(pana.value);
-                    return (
-                      <button
-                        key={pana.value}
-                        type="button"
-                        onClick={() => handleSelectPana(pana.value)}
-                        className={cn(
-                          "w-20 h-16 flex items-center justify-center border rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2",
-                          isSelected
-                            ? "bg-green-600 text-white border-green-700 ring-green-500 shadow-lg"
-                            : "bg-[#e9f7f5] text-slate-800 border-[#b9e7e1] hover:bg-[#d1eae5] hover:border-[#a0d9d1]"
-                        )}
-                        aria-pressed={isSelected}
-                      >
-                        {pana.display.length === 1 ? (
-                          <span className="text-xl font-medium">{pana.display[0]}</span>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center leading-tight">
-                            <span className="text-lg font-medium">{pana.display[0]}</span>
-                            <span className="text-sm font-medium">{pana.display[1]}</span>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-        <CardFooter className="pt-10 flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting || selectedPanas.length === 0}
-            className="w-full sm:w-auto"
-          >
-            <Send className="mr-2 h-4 w-4" />
-            {isSubmitting ? 'Submitting...' : `Submit ${selectedPanas.length} Selected`}
-          </Button>
-          {feedbackMessage && (
+              ))}
+            </div>
+          </CardContent>
+          {/* RESPONSIVE: Stacks on mobile, horizontal on larger screens */}
+          <CardFooter className="pt-10 flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <Button
+              onClick={handleOpenConfirmation}
+              disabled={isSubmitting || selectedPanas.length === 0}
+              className="w-full sm:w-auto"
+            >
+              <Send className="mr-2 h-4 w-4" />
+              {`Submit ${selectedPanas.length} Selected`}
+            </Button>
             <p className="text-sm text-gray-600 h-5 text-right flex-grow">
-              {feedbackMessage}
+              {selectedPanas.length > 0 && `You have selected ${selectedPanas.length} pana(s).`}
             </p>
-          )}
-        </CardFooter>
-      </Card>
-    </div>
+          </CardFooter>
+        </Card>
+      </div>
+
+      {/* --- MODAL: Confirmation Dialog --- */}
+      <Dialog open={isConfirmModalOpen} onOpenChange={setIsConfirmModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Your Selection</DialogTitle>
+            <DialogDescription>
+              You are about to submit {selectedPanas.length} panas. Please review your selection below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="my-4 rounded-lg border max-h-48 overflow-y-auto p-3">
+            <div className="flex flex-wrap gap-2">
+              {selectedPanas.map(num => (
+                <Badge key={num} variant="secondary">{num}</Badge>
+              ))}
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline" disabled={isSubmitting}>Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleConfirmSubmit} disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting ? 'Submitting...' : 'Confirm & Submit'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* --- MODAL: Error Dialog --- */}
+      <Dialog open={!!error} onOpenChange={() => setError(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Action Required</DialogTitle>
+            <DialogDescription className="pt-2">{error}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button">OK</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

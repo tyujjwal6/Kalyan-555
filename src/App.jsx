@@ -19,7 +19,7 @@ import DeclareResult1 from './Pages/Gamemanagement/DeclareResults1'
 import ResultHistory2 from './Pages/GaliDisswar/ResultHistory2'
 import SellReport from './Pages/GaliDisswar/SellReport'
 import WinningReport from './Pages/GaliDisswar/WinningReport'
-import WinningPrediction from './Pages/GaliDisswar/WinningPrediction'
+import WinningPrediction5 from './Pages/GaliDisswar/WinningPrediction'
 import UserBidHistory from './Pages/Reportmanagement/UserBidHistory'
 import CustomerSellReport from './Pages/Reportmanagement/CustomerSellReport'
 import WinningReport1 from './Pages/Reportmanagement/WinningReport1'
@@ -86,7 +86,7 @@ const App = () => {
           <Route path="result-history-2" element={<ResultHistory2 />} />
           <Route path="sell-report" element={<SellReport />} />
           <Route path="winning-report" element={<WinningReport />} />
-          <Route path="winning-prediction" element={<WinningPrediction />} />
+          <Route path="winning-prediction" element={<WinningPrediction5 />} />
           <Route path="user-bid-history" element={<UserBidHistory />} />
           <Route path="customer-sell-report" element={<CustomerSellReport />} />
           <Route path="winning-report" element={<WinningReport1 />} />
