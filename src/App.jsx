@@ -1,79 +1,90 @@
-import React from 'react'
-import { BrowserRouter,Routes, Route } from 'react-router-dom'
-import DashboardPage from './Pages/Dashboard/DashboardPage'
-import DeclareResult from './Pages/DeclareResult'
-import GameName from './Pages/Gamemanagement/GameName1'
-import GameName2 from './Pages/GaliDisswar/GameName2'
-import GameRates from './Pages/Gamemanagement/GameRates1'
-import BidHistory from './Pages/Gamemanagement/BidHistory1'
-import ResultHistory from './Pages/Gamemanagement/ResultHistory1'
-import GameSellReport from './Pages/Gamemanagement/GameSellReport1'
-import GameWinningReport from './Pages/Gamemanagement/GameWinningReport1'
-import Layout from './Pages/Layout'
-import Header from './Pages/Header'
-import GameWinningPrediction from './Pages/Gamemanagement/GameWinningPrediction1'
-import GameRates2 from './Pages/GaliDisswar/GameRates2'
-import BidHistory2 from './Pages/GaliDisswar/BidHistory2'
-import DeclareResult2 from './Pages/GaliDisswar/DeclareResult2'
-import DeclareResult1 from './Pages/Gamemanagement/DeclareResults1'
-import ResultHistory2 from './Pages/GaliDisswar/ResultHistory2'
-import SellReport from './Pages/GaliDisswar/SellReport'
-import WinningReport from './Pages/GaliDisswar/WinningReport'
-import WinningPrediction5 from './Pages/GaliDisswar/WinningPrediction'
-import UserBidHistory from './Pages/Reportmanagement/UserBidHistory'
-import CustomerSellReport from './Pages/Reportmanagement/CustomerSellReport'
-import WinningReport1 from './Pages/Reportmanagement/WinningReport1'
-import TransferPointReport from './Pages/Reportmanagement/TranferPointReport'
-import BidWinReport from './Pages/Reportmanagement/BidWinReport'
-import WithdrawReport from './Pages/Reportmanagement/WithdrawReport'
-import AutoDepositHistory from './Pages/Reportmanagement/AutoDepositHistory'
-import WinningPrediction3 from './Pages/WinningPrediction3'
-import FundRequest from './Pages/WalletManagement/FundRequest'
-import WithdrawRequest from './Pages/WalletManagement/WithdrawRequest'
-import AmountAddedByAdmin from './Pages/WalletManagement/AmountAddedByAdmin'
-import AddFund from './Pages/WalletManagement/AddFundUserWalltet'
-import BidRevert from './Pages/WalletManagement/BidRevert'
-import AutopayTransaction from './Pages/WalletManagement/AutoPayTransaction'
-import UserManagement from './Pages/UserManagement'
-import GameName3 from './Pages/GamesManagement/GameName3'
-import GameRates3 from './Pages/GamesManagement/GameRates3'
-import SingleDigit from './Pages/GamrAndNumbers/SingleDigit'
-import JodiDigit from './Pages/GamrAndNumbers/JodiDigit'
-import SinglePana from './Pages/GamrAndNumbers/SinglePana'
-import DoublePana from './Pages/GamrAndNumbers/DoublePana'
-import TripplePana from './Pages/GamrAndNumbers/TripplePana'
-import HalfSangam from './Pages/GamrAndNumbers/HalfSangam'
-import FullSangam from './Pages/GamrAndNumbers/FullSangam'
-import NoticeManagement from './Pages/Noticemanagement/NoticeManagement'
-import SendNotification from './Pages/Noticemanagement/SendNotification'
-import UserQuery from './Pages/UserQuery'
-import MainSettings from './Pages/Setting/MainSettings'
-import ContactSettings from './Pages/Setting/ContactSettings'
-import ClearData from './Pages/Setting/ClearData'
-import SliderImage from './Pages/Setting/SliderImages'
-import QRCodeImages from './Pages/Setting/QRcodeImages'
-import HowToPlay from './Pages/Setting/HowToPlay'
+// src/App.jsx
+
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// Import Layout and Public Pages
+import Layout from './Pages/Layout';
+import LoginPage from './Pages/LoginPage';
+import ForgotPasswordPage from './Pages/ForgotPasswordPage';
+
+// Import All Protected Page Components
+import DashboardPage from './Pages/Dashboard/DashboardPage';
+import DeclareResult from './Pages/DeclareResult';
+import GameName from './Pages/Gamemanagement/GameName1';
+import GameName2 from './Pages/GaliDisswar/GameName2';
+import GameRates from './Pages/Gamemanagement/GameRates1';
+import BidHistory from './Pages/Gamemanagement/BidHistory1';
+import ResultHistory from './Pages/Gamemanagement/ResultHistory1';
+import GameSellReport from './Pages/Gamemanagement/GameSellReport1';
+import GameWinningReport from './Pages/Gamemanagement/GameWinningReport1';
+import GameWinningPrediction from './Pages/Gamemanagement/GameWinningPrediction1';
+import GameRates2 from './Pages/GaliDisswar/GameRates2';
+import BidHistory2 from './Pages/GaliDisswar/BidHistory2';
+import DeclareResult2 from './Pages/GaliDisswar/DeclareResult2';
+import DeclareResult1 from './Pages/Gamemanagement/DeclareResults1';
+import ResultHistory2 from './Pages/GaliDisswar/ResultHistory2';
+import SellReport from './Pages/GaliDisswar/SellReport';
+import WinningReport from './Pages/GaliDisswar/WinningReport';
+import WinningPrediction5 from './Pages/GaliDisswar/WinningPrediction';
+import UserBidHistory from './Pages/Reportmanagement/UserBidHistory';
+import CustomerSellReport from './Pages/Reportmanagement/CustomerSellReport';
+import WinningReport1 from './Pages/Reportmanagement/WinningReport1';
+import TransferPointReport from './Pages/Reportmanagement/TranferPointReport';
+import BidWinReport from './Pages/Reportmanagement/BidWinReport';
+import WithdrawReport from './Pages/Reportmanagement/WithdrawReport';
+import AutoDepositHistory from './Pages/Reportmanagement/AutoDepositHistory';
+import WinningPrediction3 from './Pages/WinningPrediction3';
+import FundRequest from './Pages/WalletManagement/FundRequest';
+import WithdrawRequest from './Pages/WalletManagement/WithdrawRequest';
+import AmountAddedByAdmin from './Pages/WalletManagement/AmountAddedByAdmin';
+import AddFund from './Pages/WalletManagement/AddFundUserWalltet';
+import BidRevert from './Pages/WalletManagement/BidRevert';
+import AutopayTransaction from './Pages/WalletManagement/AutoPayTransaction';
+import UserManagement from './Pages/UserManagement';
+import GameName3 from './Pages/GamesManagement/GameName3';
+import GameRates3 from './Pages/GamesManagement/GameRates3';
+import SingleDigit from './Pages/GamrAndNumbers/SingleDigit';
+import JodiDigit from './Pages/GamrAndNumbers/JodiDigit';
+import SinglePana from './Pages/GamrAndNumbers/SinglePana';
+import DoublePana from './Pages/GamrAndNumbers/DoublePana';
+import TripplePana from './Pages/GamrAndNumbers/TripplePana';
+import HalfSangam from './Pages/GamrAndNumbers/HalfSangam';
+import FullSangam from './Pages/GamrAndNumbers/FullSangam';
+import NoticeManagement from './Pages/Noticemanagement/NoticeManagement';
+import SendNotification from './Pages/Noticemanagement/SendNotification';
+import UserQuery from './Pages/UserQuery';
+import MainSettings from './Pages/Setting/MainSettings';
+import ContactSettings from './Pages/Setting/ContactSettings';
+import ClearData from './Pages/Setting/ClearData';
+import SliderImage from './Pages/Setting/SliderImages';
+import QRCodeImages from './Pages/Setting/QRcodeImages';
+import HowToPlay from './Pages/Setting/HowToPlay';
 
 const App = () => {
-  return (
-    
-    <BrowserRouter>
+  // Simple check for authentication. Replace with your actual auth logic (e.g., from context or Redux).
+  const isAuthenticated = true; // Set to `false` to test the login redirect
 
+  return (
+    <BrowserRouter>
       <Routes>
-        {/* All routes inside Layout will have the sidebar */}
-        <Route path="/" element={<Layout />}>
-          {/* The index route is the default page for the parent path "/" */}
+        {/* Public routes that don't need the main layout */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+        {/* Protected routes that use the main layout */}
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <Layout /> : <Navigate to="/login" replace />}
+        >
+          {/* Default child route for "/" is the dashboard */}
           <Route index element={<DashboardPage />} />
           
+          {/* Your extensive list of protected routes */}
           <Route path="declare-result" element={<DeclareResult />} />
-          
-          {/* Game Management Routes */}
           <Route path="game-name" element={<GameName />} />
           <Route path="game-rates" element={<GameRates />} />
           <Route path="bid-history" element={<BidHistory />} />
-          <Route path="bid-history-2" element={<BidHistory2 />} />
-
-          {/* Note: Path for the second "Declare Result" link */}
           <Route path="declare-result-gm" element={<DeclareResult1 />} /> 
           <Route path="result-history" element={<ResultHistory />} />
           <Route path="game-sell-report" element={<GameSellReport />} />
@@ -86,10 +97,10 @@ const App = () => {
           <Route path="result-history-2" element={<ResultHistory2 />} />
           <Route path="sell-report" element={<SellReport />} />
           <Route path="winning-report" element={<WinningReport />} />
-          <Route path="winning-prediction" element={<WinningPrediction5 />} />
+          <Route path="winning-prediction-5" element={<WinningPrediction5 />} />
           <Route path="user-bid-history" element={<UserBidHistory />} />
           <Route path="customer-sell-report" element={<CustomerSellReport />} />
-          <Route path="winning-report" element={<WinningReport1 />} />
+          <Route path="winning-report-1" element={<WinningReport1 />} />
           <Route path="transfer-point-report" element={<TransferPointReport />} />
           <Route path="bid-win-report" element={<BidWinReport />} />
           <Route path="withdraw-report" element={<WithdrawReport />} />
@@ -120,18 +131,13 @@ const App = () => {
           <Route path="slider-images" element={<SliderImage />} />
           <Route path="qr-code-images" element={<QRCodeImages />} />
           <Route path="how-to-play" element={<HowToPlay />} />
-
-
-
-
-          {/* Placeholder for other routes */}
-
-          {/* A catch-all route for non-existent pages */}
-          <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Route>
+
+        {/* A catch-all route for any other path */}
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </BrowserRouter>
-    )
-}
+  );
+};
 
-export default App
+export default App;
