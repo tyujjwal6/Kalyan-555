@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// Import Link for declarative navigation and useNavigate for programmatic navigation
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, Maximize, User, Settings, LogOut, ChevronDown, KeyRound } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Header = ({ onMenuClick }) => {
+  // Get the navigate function from React Router for programmatic redirects
+  const navigate = useNavigate();
 
   const handleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -22,16 +25,23 @@ const Header = ({ onMenuClick }) => {
     }
   };
 
+  /**
+   * Handles user logout.
+   * In a real app, this would also clear authentication tokens/session state.
+   * After that, it redirects the user to the login page.
+   */
   const handleLogout = () => {
     console.log("User logout initiated...");
-    alert("Dummy API Call: User has been logged out.");
-    // Example navigation on logout: window.location.href = '/login';
+    // In a real app, you would clear the user's session/token here.
+    
+    // Redirect the user to the login page
+    navigate('/login');
   };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 sm:px-6">
       <div className="flex items-center gap-4">
-        {/* --- FIXED: Removed the "lg:hidden" class to make the button always visible --- */}
+        {/* --- FIXED: Removed "lg:hidden" class to make the button always visible --- */}
         <Button variant="ghost" size="icon" onClick={onMenuClick}>
           <Menu className="h-6 w-6 text-gray-600" />
         </Button>
@@ -58,15 +68,21 @@ const Header = ({ onMenuClick }) => {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+            
+            <DropdownMenuItem asChild>
+              <Link to="/user-management">
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </Link>
             </DropdownMenuItem>
 
+            <DropdownMenuItem asChild>
+              <Link to="/main-settings">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </Link>
+            </DropdownMenuItem>
+            
             <DropdownMenuItem asChild>
               <Link to="/forgot-password">
                 <KeyRound className="mr-2 h-4 w-4" />
@@ -75,6 +91,7 @@ const Header = ({ onMenuClick }) => {
             </DropdownMenuItem>
             
             <DropdownMenuSeparator />
+
             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
