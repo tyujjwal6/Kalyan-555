@@ -40,9 +40,9 @@ const Header = ({ onMenuClick }) => {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 sm:px-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         {/* --- FIXED: Removed "lg:hidden" class to make the button always visible --- */}
-        <Button variant="ghost" size="icon" onClick={onMenuClick}>
+        <Button variant="ghost" size="icon" onClick={onMenuClick} >
           <Menu className="h-6 w-6 text-gray-600" />
         </Button>
         <Link to="/" className="text-lg font-semibold text-blue-600 hover:text-blue-700">
@@ -50,19 +50,20 @@ const Header = ({ onMenuClick }) => {
         </Link>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={handleFullscreen}>
+      <div className="flex items-center gap-1 sm:gap-2">
+        {/* Hide fullscreen button on mobile */}
+        <Button variant="ghost" size="icon" onClick={handleFullscreen} className="hidden sm:inline-flex">
           <Maximize className="h-5 w-5 text-gray-600" />
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2 rounded-full p-1 h-auto focus-visible:ring-0">
-              <Avatar className="h-9 w-9">
+            <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 rounded-full p-1 h-auto focus-visible:ring-0">
+              <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                 <AvatarImage src="https://i.pravatar.cc/150" alt="User Avatar" />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
-              <ChevronDown className="h-4 w-4 text-gray-500" />
+              <ChevronDown className="h-4 w-4 text-gray-500 hidden sm:inline-block" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
