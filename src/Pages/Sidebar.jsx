@@ -120,10 +120,29 @@ const galiDisswarLinks = [
   return (
     <aside
       className={cn(
+        // ---- START: RESPONSIVE MODIFICATIONS ----
+        
+        // Base classes for mobile-first approach (fixed-position overlay)
         "fixed top-0 left-0 z-50 flex h-full w-64 flex-col bg-black text-white transition-transform duration-300 ease-in-out",
+        
+        // On large screens (lg), change to a static sidebar that's part of the layout
+        "lg:relative lg:translate-x-0",
+        
+        // On smaller screens, the `isOpen` prop controls visibility.
+        // On larger screens, this is overridden by `lg:translate-x-0` above,
+        // making the sidebar always visible.
         isOpen ? "translate-x-0" : "-translate-x-full"
+
+        // ---- END: RESPONSIVE MODIFICATIONS ----
       )}
     >
+      {/*
+        NOTE FOR LAYOUT: 
+        For the responsive behavior to work correctly, the main content area of your application 
+        should have a left padding on large screens to avoid being overlapped by this sidebar.
+        For example: <main className="lg:pl-64">...</main>
+      */}
+
       {/* Logo Section */}
       <div className="flex h-16 items-center justify-center border-b border-gray-800 px-4">
         <span className="text-xl font-bold tracking-wider text-white">KALYAN 555</span>
