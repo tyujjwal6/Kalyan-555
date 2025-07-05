@@ -20,18 +20,21 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-// --- Reusable Components ---
+// --- Reusable Components (with responsive text size) ---
 
 const StatCard = ({ title, value, icon, color, to }) => (
   <Link to={to} className="transform transition-transform hover:scale-105">
     <Card className={`${color} text-white shadow-lg rounded-2xl`}>
-      <CardContent className="p-6 flex items-center justify-between">
+      {/* --- RESPONSIVE: Adjusted padding for mobile --- */}
+      <CardContent className="p-4 sm:p-6 flex items-center justify-between">
         <div>
-          <div className="text-lg font-medium">{title}</div>
-          <div className="text-4xl font-bold">{value}</div>
+          {/* --- RESPONSIVE: Adjusted font sizes for mobile --- */}
+          <div className="text-base sm:text-lg font-medium">{title}</div>
+          <div className="text-3xl sm:text-4xl font-bold">{value}</div>
         </div>
-        <div className="bg-white/20 p-4 rounded-full">
-          {icon}
+        <div className="bg-white/20 p-3 sm:p-4 rounded-full">
+          {/* --- RESPONSIVE: Adjusted icon size for mobile --- */}
+          {React.cloneElement(icon, { className: "h-6 w-6 sm:h-8 sm:w-8"})}
         </div>
       </CardContent>
     </Card>
@@ -41,14 +44,16 @@ const StatCard = ({ title, value, icon, color, to }) => (
 const AnkCard = ({ ankNumber, bids, amount, color }) => (
   <Link to={`/bid-history?ank=${ankNumber}`} className="transform transition-transform hover:scale-105">
     <Card className="shadow-md rounded-xl overflow-hidden">
-      <CardHeader className="p-3 bg-white border-b">
-        <CardTitle className="text-sm font-semibold text-center text-gray-600">Total Bids {bids}</CardTitle>
+      <CardHeader className="p-2 sm:p-3 bg-white border-b">
+        {/* --- RESPONSIVE: Smaller title text on mobile --- */}
+        <CardTitle className="text-xs sm:text-sm font-semibold text-center text-gray-600">Total Bids {bids}</CardTitle>
       </CardHeader>
-      <CardContent className="p-3 text-center">
-        <div className="text-4xl font-bold text-gray-800">{amount.toLocaleString()}</div>
+      <CardContent className="p-2 sm:p-3 text-center">
+        {/* --- RESPONSIVE: Smaller amount text on mobile --- */}
+        <div className="text-3xl sm:text-4xl font-bold text-gray-800">{amount.toLocaleString()}</div>
         <p className="text-xs text-gray-500">Total Bid Amount</p>
       </CardContent>
-      <div className={`${color} text-white text-center py-1.5 text-sm font-semibold`}>
+      <div className={`${color} text-white text-center py-1 sm:py-1.5 text-sm font-semibold`}>
         Ank {ankNumber}
       </div>
     </Card>
@@ -57,7 +62,7 @@ const AnkCard = ({ ankNumber, bids, amount, color }) => (
 
 
 const DashboardPage = () => {
-  // State for forms and API interactions
+  // State for forms and API interactions (No changes here)
   const [marketBidGame, setMarketBidGame] = useState('');
   const [marketBidAmount, setMarketBidAmount] = useState('N/A');
   const [isMarketBidLoading, setIsMarketBidLoading] = useState(false);
@@ -66,7 +71,7 @@ const DashboardPage = () => {
   const [marketTime, setMarketTime] = useState('');
   const [isAnkLoading, setIsAnkLoading] = useState(false);
 
-  // State for the "Ank" cards data
+  // State for the "Ank" cards data (No changes here)
   const [ankData, setAnkData] = useState([
     { ank: 0, bids: 0, amount: 0, color: 'bg-blue-500' }, { ank: 1, bids: 0, amount: 0, color: 'bg-green-500' },
     { ank: 2, bids: 0, amount: 0, color: 'bg-sky-500' }, { ank: 3, bids: 0, amount: 0, color: 'bg-yellow-500' },
@@ -75,7 +80,7 @@ const DashboardPage = () => {
     { ank: 8, bids: 0, amount: 0, color: 'bg-red-500' }, { ank: 9, bids: 0, amount: 0, color: 'bg-teal-500' },
   ]);
 
-  // State for the user table and modal
+  // State for the user table and modal (No changes here)
   const [unapprovedUsers, setUnapprovedUsers] = useState([
     { id: 1, user: 'Sandip Kumar', mobile: '7029828702', email: 'temp@gmail.com', date: '04 Jul 2025', balance: 9, betting: 'No', transfer: 'No', active: 'Yes' },
   ]);
@@ -83,7 +88,7 @@ const DashboardPage = () => {
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // --- API Handlers ---
+  // --- API Handlers (No changes here) ---
 
   const handleMarketBidSelect = (gameName) => {
     setMarketBidGame(gameName);
@@ -134,17 +139,20 @@ const DashboardPage = () => {
 
   return (
     <>
+      {/* --- RESPONSIVE: Padding is already responsive, which is great. --- */}
       <div className="min-h-screen w-full bg-gray-100 p-4 sm:p-6 lg:p-8">
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
-          <h1 className="text-2xl font-bold text-gray-800">DASHBOARD</h1>
+          {/* --- RESPONSIVE: Smaller header text on mobile --- */}
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">DASHBOARD</h1>
           <div className="text-sm text-gray-500">Dashboards / Dashboard</div>
         </header>
         
         <main className="space-y-8">
+          {/* --- RESPONSIVE: The grid columns are already responsive. Perfect. --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <StatCard title="Users" value="1051" icon={<User size={32} />} color="bg-pink-600" to="/user-management" />
-            <StatCard title="Games" value="22" icon={<Gamepad2 size={32} />} color="bg-blue-600" to="/game-name-3" />
-            <StatCard title="Bid Amount" value="200" icon={<Tag size={32} />} color="bg-rose-500" to="/bid-history" />
+            <StatCard title="Users" value="1051" icon={<User />} color="bg-pink-600" to="/user-management" />
+            <StatCard title="Games" value="22" icon={<Gamepad2 />} color="bg-blue-600" to="/game-name-3" />
+            <StatCard title="Bid Amount" value="200" icon={<Tag />} color="bg-rose-500" to="/bid-history" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -157,8 +165,9 @@ const DashboardPage = () => {
                   <SelectContent><SelectItem value="Kalyan Morning">Kalyan Morning</SelectItem><SelectItem value="Milan Day">Milan Day</SelectItem></SelectContent>
                 </Select>
                 <div className="mt-6">
-                  <div className="text-5xl font-bold text-gray-800 h-16 flex items-center">
-                    {isMarketBidLoading ? <Loader2 className="h-12 w-12 animate-spin text-gray-400" /> : marketBidAmount}
+                  {/* --- RESPONSIVE: Smaller text and height on mobile for the large amount display --- */}
+                  <div className="text-4xl sm:text-5xl font-bold text-gray-800 h-14 sm:h-16 flex items-center">
+                    {isMarketBidLoading ? <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 animate-spin text-gray-400" /> : marketBidAmount}
                   </div>
                   <div className="text-sm text-gray-500 mt-1">Market Amount</div>
                 </div>
@@ -168,6 +177,7 @@ const DashboardPage = () => {
             <Card className="shadow-lg rounded-xl">
               <CardHeader><CardTitle>Total Bids On Single Ank Of Date 04 Jul 2025</CardTitle></CardHeader>
               <CardContent>
+                {/* --- RESPONSIVE: The form already stacks on mobile (`flex-col sm:flex-row`). Perfect. --- */}
                 <form onSubmit={handleGetBids} className="flex flex-col sm:flex-row items-end gap-4">
                   <div className="w-full">
                     <label htmlFor="ank-game-name" className="text-sm font-medium text-gray-700">Game Name</label>
@@ -184,8 +194,9 @@ const DashboardPage = () => {
               </CardContent>
             </Card>
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          
+          {/* --- RESPONSIVE: Grid starts with 2 columns on mobile and expands. Perfect. --- */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             {ankData.map(data => (
                 <AnkCard key={data.ank} ankNumber={data.ank} bids={data.bids} amount={data.amount} color={data.color} />
             ))}
@@ -194,6 +205,7 @@ const DashboardPage = () => {
           <Card className="shadow-lg rounded-xl">
             <CardHeader><CardTitle>Un-Approved Users List</CardTitle></CardHeader>
             <CardContent>
+              {/* --- RESPONSIVE: The search/show entries controls already stack on mobile. Perfect. --- */}
               <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
                   <div className="flex items-center gap-2 w-full md:w-auto">
                       <span className="text-sm">Show</span>
@@ -205,6 +217,7 @@ const DashboardPage = () => {
                       <Input id="search-users" type="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   </div>
               </div>
+              {/* --- RESPONSIVE: This is the key for tables. It makes the table horizontally scrollable on small screens, preventing layout breakage. --- */}
               <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -234,7 +247,7 @@ const DashboardPage = () => {
         </main>
       </div>
 
-      {/* User Detail Modal */}
+      {/* User Detail Modal (shadcn Dialog is inherently responsive) */}
       <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
         <DialogContent>
           <DialogHeader>
@@ -257,4 +270,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export  default DashboardPage;
